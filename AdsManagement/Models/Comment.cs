@@ -24,10 +24,22 @@ namespace AdsManagement.Domain.Models
             UserId = userId;
             Text = text;
             Estimation = estimation;
+            CreatedAt = DateTime.UtcNow;
         }
         internal Comment(Guid advertisementId, Guid userId, string text, int estimation, DateTime createAt) : this(advertisementId, userId, text, estimation)
         {
             CreatedAt = createAt;
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Comment comment)
+                return false;
+
+            return Id == comment.Id;
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
         }
     }
 }

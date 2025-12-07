@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1 d17.14
+VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.Domain", "AdsManagement\AdsManagement.Domain.csproj", "{12D61EC1-44CC-45C1-920A-4DF1644EB859}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrstructure", "Infrstructure", "{04ACC00F-2231-4E44-B951-2ED3BF5E44A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.Data", "AdsManagement.Data\AdsManagement.Data.csproj", "{2158066B-1709-4575-B64B-2B24F1FDA458}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,9 +21,17 @@ Global
 		{12D61EC1-44CC-45C1-920A-4DF1644EB859}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12D61EC1-44CC-45C1-920A-4DF1644EB859}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12D61EC1-44CC-45C1-920A-4DF1644EB859}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2158066B-1709-4575-B64B-2B24F1FDA458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2158066B-1709-4575-B64B-2B24F1FDA458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2158066B-1709-4575-B64B-2B24F1FDA458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2158066B-1709-4575-B64B-2B24F1FDA458}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{12D61EC1-44CC-45C1-920A-4DF1644EB859} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{2158066B-1709-4575-B64B-2B24F1FDA458} = {04ACC00F-2231-4E44-B951-2ED3BF5E44A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {612D6E50-3851-42B7-B4F3-92793949D457}

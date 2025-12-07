@@ -13,5 +13,16 @@ namespace AdsManagement.Domain.Models
         {
             Name = name;
         }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Role role)
+                return false;
+
+            return Id == role.Id;
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
+        }
     }
 }

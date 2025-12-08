@@ -18,6 +18,7 @@ namespace AdsManagement.Domain.Models
             OriginalImagePath = originalPath;
             SmallImagePath = smallPath;
         }
+        protected AdvertisementImage() : base() { }
 
         public override bool Equals(object? obj)
         {

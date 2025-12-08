@@ -13,6 +13,7 @@ namespace AdsManagement.Domain.Models
         {
             Name = name;
         }
+        protected Role() : base() { }
         public override bool Equals(object? obj)
         {
             if (obj is not Role role)

@@ -13,6 +13,6 @@ namespace AdsManagement.Domain.Models
         {
             Id = id ?? Guid.NewGuid();
         }
-        public BaseEntity() { }
+        protected BaseEntity() { }
     }
 }

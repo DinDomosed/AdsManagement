@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrstructure", "Infrstruct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.Data", "AdsManagement.Data\AdsManagement.Data.csproj", "{2158066B-1709-4575-B64B-2B24F1FDA458}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{89CAD674-E78C-450C-A2DD-2C46D730B085}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.App", "AdsManagement.App\AdsManagement.App.csproj", "{179A7D17-5DC1-45C7-9465-F7F087188EF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{2158066B-1709-4575-B64B-2B24F1FDA458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2158066B-1709-4575-B64B-2B24F1FDA458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2158066B-1709-4575-B64B-2B24F1FDA458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{179A7D17-5DC1-45C7-9465-F7F087188EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{179A7D17-5DC1-45C7-9465-F7F087188EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{179A7D17-5DC1-45C7-9465-F7F087188EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{179A7D17-5DC1-45C7-9465-F7F087188EF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{12D61EC1-44CC-45C1-920A-4DF1644EB859} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{2158066B-1709-4575-B64B-2B24F1FDA458} = {04ACC00F-2231-4E44-B951-2ED3BF5E44A4}
+		{179A7D17-5DC1-45C7-9465-F7F087188EF8} = {89CAD674-E78C-450C-A2DD-2C46D730B085}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {612D6E50-3851-42B7-B4F3-92793949D457}

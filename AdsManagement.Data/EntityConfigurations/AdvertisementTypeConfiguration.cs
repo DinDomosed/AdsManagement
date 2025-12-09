@@ -33,7 +33,10 @@ namespace AdsManagement.Data.EntityConfigurations
             builder.HasIndex(c => new { c.UserId, c.Number })
                 .IsUnique();
 
-            builder.Ignore(c => c.Rating);
+            builder.Property(c => c.Rating)
+                .HasColumnName("Rating")
+                .HasColumnType("decimal(2,1)")
+                .HasDefaultValue(0);
 
             builder.Property(c => c.CreatedAt)
                 .HasColumnName("Date_of_creation")

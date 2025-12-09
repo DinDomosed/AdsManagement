@@ -1,4 +1,4 @@
-﻿using AdsManagement.Domain.Configuration;
+﻿
 using AdsManagement.Domain.Rules;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace AdsManagement.Domain.Models
         public int Number { get; private set; }
         public string Title { get; private set; }
         public string Text { get; private set; }
-        public float Rating { get; private set; }
+        public decimal Rating { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime ExpiresAt { get; private set; }
 
@@ -40,12 +40,12 @@ namespace AdsManagement.Domain.Models
 
         protected Advertisement() : base() { }
 
-        public void UpdateRating(float rating)
+        public void UpdateRating(decimal rating)
         {
             if (rating > RatingRules.Max || rating < RatingRules.Min)
                 throw new ArgumentOutOfRangeException(nameof(rating), $"Rating must be between {RatingRules.Min} and {RatingRules.Max}");
 
-            Rating = rating;
+            Rating = Math.Round(rating, 1, MidpointRounding.AwayFromZero);
         }
 
         public void UpdateTitle(string title)

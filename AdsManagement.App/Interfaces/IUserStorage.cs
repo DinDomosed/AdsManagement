@@ -11,6 +11,6 @@ namespace AdsManagement.App.Interfaces
 {
     public interface IUserStorage: IStorage<User>
     {
-        public Task<PagedResult<User>> GetFilterUserAsync(UserFilterDto userFilterDto);
+        public Task<PagedResult<User>> GetFilterUserAsync(UserFilterDto userFilterDto, CancellationToken token = default);
     }
 }

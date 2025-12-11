@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdsManagement.App.DTOs.Advertisement
+﻿namespace AdsManagement.App.DTOs.Advertisement
 {
     public class AdFilterDto
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdsManagement.App;
-using AdsManagement.App.Common;
+﻿using AdsManagement.App.Common;
 using AdsManagement.App.DTOs.User;
 using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces;
@@ -36,7 +30,7 @@ namespace AdsManagement.Data.Storages
             if (user == null)
                 return false;
 
-            var dbRole = await GetAndAttachRoleAsync(user.Role.Name, token);
+            var dbRole = await GetAndAttachRoleAsync(user.RoleId, token);
 
             user.UpdateRole(dbRole);
 
@@ -65,14 +59,14 @@ namespace AdsManagement.Data.Storages
             if (user == null)
                 return false;
 
-            var dbUser = await _dbContext.Users.FindAsync(user.Id, token);
+            var dbUser = await _dbContext.Users.FirstOrDefaultAsync(c => c.Id == user.Id);
 
             if (dbUser == null)
                 return false;
 
-            if (!dbUser.Role.Equals(user.Role))
+            if (dbUser.RoleId != user.RoleId)
             {
-                var dbRole = await GetAndAttachRoleAsync(user.Role.Name, token);
+                var dbRole = await GetAndAttachRoleAsync(user.RoleId, token);
 
                 dbUser.UpdateRole(dbRole);
             }
@@ -142,16 +136,16 @@ namespace AdsManagement.Data.Storages
             };
         }
 
-        private async Task<Role> GetAndAttachRoleAsync(string roleName, CancellationToken token = default)
+        private async Task<Role> GetAndAttachRoleAsync(Guid roleId, CancellationToken token = default)
         {
-            if (string.IsNullOrWhiteSpace(roleName))
-                throw new ArgumentNullException(nameof(roleName), "Role name cannot be empty");
+            if (roleId == Guid.Empty)
+                throw new ArgumentNullException(nameof(roleId), "Role ID cannot be empty");
 
-            var dbRole = _dbContext.Roles.Local.FirstOrDefault(c => c.Name == roleName)
-               ?? await _dbContext.Roles.FirstOrDefaultAsync(c => c.Name == roleName, token);
+            var dbRole = _dbContext.Roles.Local.FirstOrDefault(c => c.Id == roleId)
+               ?? await _dbContext.Roles.FirstOrDefaultAsync(c => c.Id == roleId, token);
 
             if (dbRole == null)
-                throw new RoleNotFoundException($"Role '{roleName}' not found");
+                throw new RoleNotFoundException($"Role '{roleId}' not found");
             else
             {
                 if (_dbContext.Entry(dbRole).State == EntityState.Detached)

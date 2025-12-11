@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AdsManagement.Domain.Models;
-using AdsManagement.Data.EntityConfigurations;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using AdsManagement.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdsManagement.Data
 {

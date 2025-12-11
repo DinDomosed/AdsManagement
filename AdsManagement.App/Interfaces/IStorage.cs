@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdsManagement.Domain.Models;
+﻿using AdsManagement.Domain.Models;
 namespace AdsManagement.App.Interfaces
 {
     public interface IStorage<T> 

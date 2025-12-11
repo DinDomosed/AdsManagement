@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdsManagement.Domain.Models
+﻿namespace AdsManagement.Domain.Models
 {
     public class User : BaseEntity
     {
         public string Name { get; private set; }
         public Guid RoleId { get; private set; }
         public virtual Role Role { get; private set; }
-        public User(string name,Guid roleId, Guid? id = null) : base(id)
+        public User(string name, Guid roleId, Guid? id = null) : base(id)
         {
             Name = name;
             RoleId = roleId;
@@ -31,6 +25,7 @@ namespace AdsManagement.Domain.Models
         public void UpdateRole(Role role)
         {
             Role = role ?? throw new ArgumentNullException(nameof(role));
+            RoleId = role.Id;
         }
 
         public override bool Equals(object? obj)

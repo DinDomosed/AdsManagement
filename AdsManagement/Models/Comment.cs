@@ -1,9 +1,4 @@
 ﻿using AdsManagement.Domain.Rules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdsManagement.Domain.Models
 {

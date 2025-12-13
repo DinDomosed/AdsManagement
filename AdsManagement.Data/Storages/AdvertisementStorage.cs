@@ -1,0 +1,251 @@
+﻿using AdsManagement.App.Common;
+using AdsManagement.App.DTOs.Advertisement;
+using AdsManagement.App.Exceptions;
+using AdsManagement.App.Interfaces;
+using AdsManagement.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace AdsManagement.Data.Storages
+{
+    public class AdvertisementStorage : IAdvertisementStorage
+    {
+        private readonly int _limitationAds;
+        private readonly AdsDbContext _context;
+        private readonly IDateTimeProvider _time;
+        public AdvertisementStorage(AdsDbContext context, IDateTimeProvider time, int limitationAds)
+        {
+            _context = context;
+            _time = time;
+            _limitationAds = limitationAds;
+        }
+        public async Task<Advertisement?> GetAsync(Guid id, CancellationToken token = default)
+        {
+            if (id == Guid.Empty)
+                return null;
+
+            return await _context.Advertisements
+                .AsNoTracking()
+                .Include(c => c.Images)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id, token);
+        }
+
+        public async Task<bool> AddAsync(Advertisement advertisement, CancellationToken token = default)
+        {
+            if (advertisement == null)
+                return false;
+
+            var dbUser = await GetUserAsync(advertisement.UserId, token);
+
+            if (await GetUserAdsCountActive(dbUser.Id, token) >= _limitationAds)
+                return false;
+
+            dbUser.Advertisements.Add(advertisement);
+            await _context.SaveChangesAsync(token);
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken token = default)
+        {
+            if (id == Guid.Empty)
+                return false;
+
+            var dbAdv = await _context.Advertisements.FindAsync(id, token);
+
+            if (dbAdv == null)
+                throw new AdvertisementNotFoundException($"Advertisement {id} not found");
+
+            _context.Advertisements.Remove(dbAdv);
+            await _context.SaveChangesAsync(token);
+            return true;
+        }
+        public async Task<bool> UpdateAsync(Advertisement adv, CancellationToken token = default)
+        {
+            if (adv == null)
+                return false;
+
+            var dbAdv = await _context.Advertisements.FindAsync(adv.Id, token);
+
+            if (dbAdv == null)
+                return false;
+
+            _context.Entry(dbAdv).CurrentValues.SetValues(adv);
+            await _context.SaveChangesAsync(token);
+            return true;
+        }
+
+        public async Task<PagedResult<Advertisement>> GetFilterAdsAsync(AdFilterDto filter, CancellationToken token = default)
+        {
+            var query = _context.Advertisements.AsNoTracking()
+                .Include(c => c.Images)
+                .AsQueryable();
+
+            if (filter.Page <= 0) filter.Page = 1;
+            if (filter.PageSize <= 0) filter.PageSize = 10;
+
+            query = ApplyFilters(query, filter);
+            query = ApplySorting(query, filter.SortBy, filter.SortDesc);
+
+            int totalCount = await query.CountAsync(token);
+            var items = await query
+                .AsNoTracking()
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync(token);
+
+            return new PagedResult<Advertisement>()
+            {
+                TotalCount = totalCount,
+                Items = items,
+                Page = filter.Page,
+                PageSize = filter.PageSize
+            };
+        }
+        public async Task<int?> GetUserAdsCountAll(Guid userId, CancellationToken token = default)
+        {
+            if (userId == Guid.Empty)
+                return null;
+
+            var query = _context.Advertisements.AsNoTracking().AsQueryable();
+
+            query = query.Where(c => c.UserId == userId);
+            return await query.CountAsync(token);
+        }
+
+        public async Task<int?> GetUserAdsCountActive(Guid userId, CancellationToken token = default)
+        {
+            if (userId == Guid.Empty)
+                return null;
+
+            var query = _context.Advertisements.AsNoTracking().AsQueryable();
+
+            query = query.Where(c => c.UserId == userId && c.ExpiresAt > DateTime.UtcNow);
+            return await query.CountAsync(token);
+
+        }
+        public async Task<PagedResult<Advertisement>> GetUserAdsAsync(Guid userId, UserAdvertisementFilterDto filter,
+            CancellationToken token = default)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentNullException("The user ID cannot be empty", nameof(userId));
+
+            if (!await _context.Users.AnyAsync(c => c.Id == userId, token))
+                throw new UserNotFoundException($"User {userId} not found");
+
+            if (filter.Page <= 0) filter.Page = 1;
+            if (filter.PageSize <= 0) filter.PageSize = 10;
+
+            var query = _context.Advertisements
+                .AsNoTracking()
+                .Include(c => c.Images)
+                .AsQueryable();
+
+            switch (filter.IsExpired)
+            {
+                case true:
+                    query = query.Where(c => c.ExpiresAt < _time.UtcNow);
+                    break;
+
+                case false:
+                    query = query.Where(c => c.ExpiresAt >= _time.UtcNow);
+                    break;
+            }
+
+            int totalCount = await query.CountAsync(token);
+
+            var items = await query
+                .AsNoTracking()
+                .OrderByDescending(c => c.Number)
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync(token);
+
+            return new PagedResult<Advertisement>()
+            {
+                Items = items,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        private async Task<User?> GetUserAsync(Guid id, CancellationToken token = default)
+        {
+            if (id == Guid.Empty)
+                return null;
+
+            return await _context.Users.FindAsync(id, token) ?? throw new UserNotFoundException($"User {id} not found");
+        }
+        private IQueryable<Advertisement> ApplyFilters(IQueryable<Advertisement> query, AdFilterDto filter)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.Title))
+                query = query.Where(c => c.Title == filter.Title);
+
+            if (!string.IsNullOrWhiteSpace(filter.Text))
+                query = query.Where(c => c.Text.Contains(filter.Text));
+
+            if (filter.Rating.HasValue)
+                query = query.Where(c => c.Rating == filter.Rating);
+
+            if (filter.Number.HasValue)
+                query = query.Where(c => c.Number == filter.Number);
+
+            if (filter.CreatedDateFrom.HasValue)
+                query = query.Where(c => c.CreatedAt >= filter.CreatedDateFrom);
+
+            if (filter.CreatedDateTo.HasValue)
+                query = query.Where(c => c.CreatedAt <= filter.CreatedDateTo);
+
+            if (filter.ExpiresDateFrom.HasValue)
+                query = query.Where(c => c.ExpiresAt >= filter.ExpiresDateFrom);
+
+            if (filter.ExpiresDateTo.HasValue)
+                query = query.Where(c => c.ExpiresAt <= filter.ExpiresDateTo);
+
+            if (filter.IsExpired == true)
+                query = query.Where(c => c.ExpiresAt < _time.UtcNow);
+            else if (filter.IsExpired == false)
+                query = query.Where(c => c.ExpiresAt >= _time.UtcNow);
+
+            return query;
+        }
+        private IQueryable<Advertisement> ApplySorting(IQueryable<Advertisement> query, string? sortBy, bool? sortDesc)
+        {
+            switch (sortBy?.ToLower())
+            {
+                case "title":
+                    query = sortDesc == true
+                        ? query.OrderByDescending(c => c.Title)
+                        : query.OrderBy(c => c.Title);
+                    break;
+
+                case "rating":
+                    query = sortDesc == true
+                        ? query.OrderByDescending(c => c.Rating)
+                        : query.OrderBy(c => c.Rating);
+                    break;
+
+                case "number":
+                    query = sortDesc == true
+                        ? query.OrderByDescending(c => c.Number)
+                        : query.OrderBy(c => c.Number);
+                    break;
+
+                case "creationDate":
+                    query = sortDesc == true
+                        ? query.OrderByDescending(c => c.CreatedAt)
+                        : query.OrderBy(c => c.CreatedAt);
+                    break;
+
+                default:
+                    query = sortDesc == true
+                        ? query.OrderByDescending(c => c.Title)
+                        : query.OrderBy(c => c.Title);
+                    break;
+            }
+
+            return query;
+        }
+    }
+}
+

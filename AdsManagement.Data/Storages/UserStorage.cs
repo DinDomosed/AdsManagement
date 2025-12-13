@@ -1,4 +1,5 @@
 ﻿using AdsManagement.App.Common;
+using AdsManagement.App.DTOs.Advertisement;
 using AdsManagement.App.DTOs.User;
 using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces;
@@ -21,7 +22,6 @@ namespace AdsManagement.Data.Storages
                 return null;
             return await _dbContext.Users.AsNoTracking()
                 .Include(c => c.Role)
-                .Include(c => c.Advertisements)
                 .FirstOrDefaultAsync(c => c.Id == id, token);
         }
 
@@ -47,7 +47,7 @@ namespace AdsManagement.Data.Storages
             var dbUser = await _dbContext.Users.FindAsync(id, token);
 
             if (dbUser == null)
-                return false;
+                throw new UserNotFoundException($"User {id} not found");
 
             _dbContext.Users.Remove(dbUser);
             await _dbContext.SaveChangesAsync(token);
@@ -62,7 +62,7 @@ namespace AdsManagement.Data.Storages
             var dbUser = await _dbContext.Users.FirstOrDefaultAsync(c => c.Id == user.Id);
 
             if (dbUser == null)
-                return false;
+                throw new UserNotFoundException($"User {user.Id} not found");
 
             if (dbUser.RoleId != user.RoleId)
             {
@@ -84,6 +84,9 @@ namespace AdsManagement.Data.Storages
                 .AsNoTracking()
                 .AsQueryable();
 
+            if (filterDto.Page <= 0) filterDto.Page = 1;
+            if (filterDto.PageSize <= 0) filterDto.PageSize = 10;
+
             if (!string.IsNullOrWhiteSpace(filterDto.Name))
                 query = query.Where(c => c.Name.Contains(filterDto.Name));
 
@@ -92,34 +95,7 @@ namespace AdsManagement.Data.Storages
 
             int totalCount = await query.CountAsync(token);
 
-            switch (filterDto.SortBy)
-            {
-                case "Name":
-                    {
-                        if (filterDto.SortDesc == true)
-                        {
-                            query = query.OrderByDescending(c => c.Name);
-
-                        }
-                        else
-                        {
-                            query = query.OrderBy(c => c.Name);
-                        }
-                        break;
-                    }
-                case "Role":
-                    {
-                        if (filterDto.SortDesc == true)
-                        {
-                            query = query.OrderByDescending(c => c.Role.Name);
-                        }
-                        else
-                        {
-                            query = query.OrderBy(c => c.Role.Name);
-                        }
-                        break;
-                    }
-            }
+            query = ApplySorting(query, filterDto.SortBy, filterDto.SortDesc);
 
             List<User> items = await query
                 .Skip((filterDto.Page - 1) * filterDto.PageSize)
@@ -153,6 +129,32 @@ namespace AdsManagement.Data.Storages
             }
             return dbRole;
 
+        }
+
+        private IQueryable<User> ApplySorting(IQueryable<User> query, string? sortBy, bool? sortDesc)
+        {
+            switch (sortBy?.ToLower())
+            {
+                case "name":
+                    query = sortDesc == true
+                    ? query = query.OrderByDescending(c => c.Name)
+                    : query = query.OrderBy(c => c.Name);
+                    break;
+
+                case "role":
+
+                    query = sortDesc == true
+                    ? query = query.OrderByDescending(c => c.Role.Name)
+                    : query = query.OrderBy(c => c.Role.Name);
+                    break;
+
+                default :
+                    query = sortDesc == true
+                    ? query = query.OrderByDescending(c => c.Name)
+                    : query = query.OrderBy(c => c.Name);
+                    break;
+            }
+            return query;
         }
     }
 }

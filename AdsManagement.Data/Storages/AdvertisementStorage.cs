@@ -38,9 +38,9 @@ namespace AdsManagement.Data.Storages
             var dbUser = await GetUserAsync(advertisement.UserId, token);
 
             if (await GetUserAdsCountActive(dbUser.Id, token) >= _limitationAds)
-                return false;
+                throw new ExceedingTheAdLimitException("The limit of active ads has been reached");
 
-            dbUser.Advertisements.Add(advertisement);
+            _context.Advertisements.Add(advertisement);
             await _context.SaveChangesAsync(token);
             return true;
         }
@@ -119,7 +119,7 @@ namespace AdsManagement.Data.Storages
 
             var query = _context.Advertisements.AsNoTracking().AsQueryable();
 
-            query = query.Where(c => c.UserId == userId && c.ExpiresAt > DateTime.UtcNow);
+            query = query.Where(c => c.UserId == userId && c.ExpiresAt >= _time.UtcNow);
             return await query.CountAsync(token);
 
         }
@@ -138,6 +138,7 @@ namespace AdsManagement.Data.Storages
             var query = _context.Advertisements
                 .AsNoTracking()
                 .Include(c => c.Images)
+                .Where(c => c.UserId == userId)
                 .AsQueryable();
 
             switch (filter.IsExpired)
@@ -179,10 +180,19 @@ namespace AdsManagement.Data.Storages
         private IQueryable<Advertisement> ApplyFilters(IQueryable<Advertisement> query, AdFilterDto filter)
         {
             if (!string.IsNullOrWhiteSpace(filter.Title))
-                query = query.Where(c => c.Title == filter.Title);
+            {
+                var title = filter.Title.Trim();
+
+                if (_context.Database.ProviderName?.Contains("InMemory") == true) //for tests
+                    query = query.Where(c => c.Title.StartsWith(title, StringComparison.OrdinalIgnoreCase));
+
+                else 
+                    query = query.Where(c => EF.Functions.ILike(c.Title, $"{title}%"));
+            }
 
             if (!string.IsNullOrWhiteSpace(filter.Text))
-                query = query.Where(c => c.Text.Contains(filter.Text));
+                query = query.Where(c => EF.Functions.ToTsVector("russian", c.Text)
+                .Matches(filter.Text));
 
             if (filter.Rating.HasValue)
                 query = query.Where(c => c.Rating == filter.Rating);

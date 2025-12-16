@@ -88,7 +88,13 @@ namespace AdsManagement.Data.Storages
             if (filterDto.PageSize <= 0) filterDto.PageSize = 10;
 
             if (!string.IsNullOrWhiteSpace(filterDto.Name))
-                query = query.Where(c => c.Name.Contains(filterDto.Name));
+            {
+                var name = filterDto.Name.Trim();
+                if (_dbContext.Database.ProviderName?.Contains("InMemory") == true)
+                        query = query.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase));
+                else
+                    query = query.Where(c => EF.Functions.Like(c.Name, $"{name}%"));
+            }
 
             if (filterDto.RoleId.HasValue)
                 query = query.Where(c => c.RoleId == filterDto.RoleId);
@@ -148,7 +154,7 @@ namespace AdsManagement.Data.Storages
                     : query = query.OrderBy(c => c.Role.Name);
                     break;
 
-                default :
+                default:
                     query = sortDesc == true
                     ? query = query.OrderByDescending(c => c.Name)
                     : query = query.OrderBy(c => c.Name);

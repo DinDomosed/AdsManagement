@@ -7,7 +7,10 @@ namespace AdsManagement.App.Interfaces
     public interface IAdvertisementStorage : IStorage<Advertisement>
     {
         public Task<PagedResult<Advertisement>> GetFilterAdsAsync(AdFilterDto adFilterDto, CancellationToken token = default);
-        public Task<int> GetUserAdsCountActive(Guid userId, CancellationToken token = default);
-        public Task<int> GetUserAdsCountAll(Guid userId, CancellationToken token = default);
+        public Task<int?> GetUserAdsCountActive(Guid userId, CancellationToken token = default);
+        public Task<int?> GetUserAdsCountAll(Guid userId, CancellationToken token = default);
+        public Task<PagedResult<Advertisement>> GetUserAdsAsync(Guid userId, UserAdvertisementFilterDto filter, CancellationToken token = default);
+
+
     }
 }

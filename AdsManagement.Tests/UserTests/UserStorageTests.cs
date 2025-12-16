@@ -229,7 +229,6 @@ namespace AdsManagement.Tests.UserTests
 
             var filter = new UserFilterDto()
             {
-                Name = "1",
                 RoleId = testRole2.Id,
                 SortBy = "Role"
             };

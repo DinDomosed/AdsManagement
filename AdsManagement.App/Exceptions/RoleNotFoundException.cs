@@ -1,9 +1,10 @@
-﻿namespace AdsManagement.App.Exceptions
+﻿using AdsManagement.Domain.Models;
+
+namespace AdsManagement.App.Exceptions
 {
-    public class RoleNotFoundException : Exception
+    public sealed class RoleNotFoundException : EntityNotFoundException
     {
-        public RoleNotFoundException() : base() { }
-        public RoleNotFoundException(string? message) : base(message) { }
-        public RoleNotFoundException(string? message, Exception? innerException) : base(message, innerException) { }
+        public RoleNotFoundException(Guid id) : base(nameof(Role), id) { }
+
     }
 }

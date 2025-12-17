@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AdsManagement.Domain.Models;
 
 namespace AdsManagement.App.Exceptions
 {
-    public class UserNotFoundException : Exception
+    public sealed class UserNotFoundException : EntityNotFoundException
     {
-        public UserNotFoundException() : base() { }
-        public UserNotFoundException(string? message) : base(message) { }
-        public UserNotFoundException(string? message, Exception? innerException) : base() { }
+        public UserNotFoundException(Guid id) : base(nameof(User), id) { }
     }
 }

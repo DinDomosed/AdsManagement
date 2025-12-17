@@ -68,7 +68,7 @@ namespace AdsManagement.Data.Storages
             var dbRole = await _dbContext.Roles.FindAsync(id, token);
 
             if (dbRole == null)
-                throw new RoleNotFoundException($"Role {id} not found");
+                throw new RoleNotFoundException(id);
 
             _dbContext.Roles.Remove(dbRole);
             await _dbContext.SaveChangesAsync(token);
@@ -83,7 +83,7 @@ namespace AdsManagement.Data.Storages
             var dbRole = await _dbContext.Roles.FindAsync(role.Id, token);
 
             if (dbRole == null)
-                throw new RoleNotFoundException($"Role {role.Id} not found");
+                throw new RoleNotFoundException(role.Id);
 
             _dbContext.Entry(dbRole).CurrentValues.SetValues(role);
             await _dbContext.SaveChangesAsync(token);

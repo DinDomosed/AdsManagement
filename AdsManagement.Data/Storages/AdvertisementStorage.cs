@@ -4,6 +4,7 @@ using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 
 namespace AdsManagement.Data.Storages
 {
@@ -53,7 +54,7 @@ namespace AdsManagement.Data.Storages
             var dbAdv = await _context.Advertisements.FindAsync(id, token);
 
             if (dbAdv == null)
-                throw new AdvertisementNotFoundException($"Advertisement {id} not found");
+                throw new AdvertisementNotFoundException(id);
 
             _context.Advertisements.Remove(dbAdv);
             await _context.SaveChangesAsync(token);
@@ -64,10 +65,7 @@ namespace AdsManagement.Data.Storages
             if (adv == null)
                 return false;
 
-            var dbAdv = await _context.Advertisements.FindAsync(adv.Id, token);
-
-            if (dbAdv == null)
-                return false;
+            var dbAdv = await _context.Advertisements.FindAsync(adv.Id, token) ?? throw new AdvertisementNotFoundException(adv.Id);
 
             _context.Entry(dbAdv).CurrentValues.SetValues(adv);
             await _context.SaveChangesAsync(token);
@@ -130,7 +128,7 @@ namespace AdsManagement.Data.Storages
                 throw new ArgumentNullException("The user ID cannot be empty", nameof(userId));
 
             if (!await _context.Users.AnyAsync(c => c.Id == userId, token))
-                throw new UserNotFoundException($"User {userId} not found");
+                throw new UserNotFoundException(userId);
 
             if (filter.Page <= 0) filter.Page = 1;
             if (filter.PageSize <= 0) filter.PageSize = 10;
@@ -175,7 +173,7 @@ namespace AdsManagement.Data.Storages
             if (id == Guid.Empty)
                 return null;
 
-            return await _context.Users.FindAsync(id, token) ?? throw new UserNotFoundException($"User {id} not found");
+            return await _context.Users.FindAsync(id, token) ?? throw new UserNotFoundException(id);
         }
         private IQueryable<Advertisement> ApplyFilters(IQueryable<Advertisement> query, AdFilterDto filter)
         {

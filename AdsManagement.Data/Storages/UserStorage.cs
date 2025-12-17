@@ -47,7 +47,7 @@ namespace AdsManagement.Data.Storages
             var dbUser = await _dbContext.Users.FindAsync(id, token);
 
             if (dbUser == null)
-                throw new UserNotFoundException($"User {id} not found");
+                throw new UserNotFoundException(id);
 
             _dbContext.Users.Remove(dbUser);
             await _dbContext.SaveChangesAsync(token);
@@ -62,7 +62,7 @@ namespace AdsManagement.Data.Storages
             var dbUser = await _dbContext.Users.FirstOrDefaultAsync(c => c.Id == user.Id);
 
             if (dbUser == null)
-                throw new UserNotFoundException($"User {user.Id} not found");
+                throw new UserNotFoundException(user.Id);
 
             if (dbUser.RoleId != user.RoleId)
             {
@@ -127,7 +127,7 @@ namespace AdsManagement.Data.Storages
                ?? await _dbContext.Roles.FirstOrDefaultAsync(c => c.Id == roleId, token);
 
             if (dbRole == null)
-                throw new RoleNotFoundException($"Role '{roleId}' not found");
+                throw new RoleNotFoundException(roleId);
             else
             {
                 if (_dbContext.Entry(dbRole).State == EntityState.Detached)

@@ -1,13 +1,8 @@
 ﻿using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.App.Interfaces;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdsManagement.Data.Storages
 {
@@ -23,7 +18,7 @@ namespace AdsManagement.Data.Storages
         public async Task<Guid> AddAsync(AdvertisementImage image, CancellationToken token = default)
         {
             if (image == null)
-                throw new ArgumentNullException("The image connot be null", nameof(image));
+                throw new ArgumentNullException(nameof(image), "The image cannot be null");
 
             if (!await AdExists(image.AdvertisementId, token))
                 throw new AdvertisementNotFoundException(image.AdvertisementId);
@@ -38,7 +33,7 @@ namespace AdsManagement.Data.Storages
         public async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("The image ID cannot be empty", nameof(id));
+                throw new ArgumentException(nameof(id), "The image ID cannot be empty");
 
             var dbImage = await _context.AdvertisementImages.FindAsync(id, token) ?? throw new AdImageNotFoundException(id);
 
@@ -48,7 +43,7 @@ namespace AdsManagement.Data.Storages
         public async Task<AdvertisementImage> GetAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("The image ID cannot be empty", nameof(id));
+                throw new ArgumentException(nameof(id), "The image ID cannot be empty");
 
             var image = await _context.AdvertisementImages
                 .AsNoTracking()
@@ -61,8 +56,8 @@ namespace AdsManagement.Data.Storages
         }
         public async Task<List<AdvertisementImage>> GetByAdIdAsync(Guid advertisementId, CancellationToken token = default)
         {
-            if(advertisementId == Guid.Empty)
-                throw new ArgumentException("The advertisement ID cannot be empty", nameof(advertisementId));
+            if (advertisementId == Guid.Empty)
+                throw new ArgumentException(nameof(advertisementId), "The advertisement ID cannot be empty");
 
             if (!await AdExists(advertisementId, token))
                 throw new AdvertisementNotFoundException(advertisementId);
@@ -82,7 +77,7 @@ namespace AdsManagement.Data.Storages
         private async Task<bool> IsImageLimitReached(Guid adId, CancellationToken token)
         {
             if (adId == Guid.Empty)
-                throw new ArgumentException("The advertisement ID cannot be empty", nameof(adId));
+                throw new ArgumentException(nameof(adId), "The advertisement ID cannot be empty");
             var query = _context.AdvertisementImages.AsNoTracking().AsQueryable();
             query = query.Where(c => c.AdvertisementId == adId);
 

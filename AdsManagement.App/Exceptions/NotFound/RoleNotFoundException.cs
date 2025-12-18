@@ -1,4 +1,5 @@
-﻿using AdsManagement.Domain.Models;
+﻿using AdsManagement.App.Exceptions.NotFound;
+using AdsManagement.Domain.Models;
 
 namespace AdsManagement.App.Exceptions
 {

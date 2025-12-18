@@ -1,19 +1,12 @@
 ﻿using AdsManagement.App.Exceptions;
-using AdsManagement.App.Interfaces;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Domain.Models;
 using AdsManagement.Tests.FakeData;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace AdsManagement.Tests.CommentTests
+namespace AdsManagement.Tests.Comments
 {
     public class CommentStorageTests
     {

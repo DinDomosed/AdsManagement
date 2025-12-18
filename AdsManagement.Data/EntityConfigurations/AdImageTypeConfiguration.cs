@@ -20,10 +20,13 @@ namespace AdsManagement.Data.EntityConfigurations
                 .HasMaxLength(255)
                 .IsRequired();
 
+            builder.HasIndex(c => new { c.AdvertisementId, c.OriginalImagePath })
+                .IsUnique();
+
             builder.HasOne(i => i.Advertisement)
                 .WithMany(a => a.Images)
                 .HasForeignKey(i => i.AdvertisementId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

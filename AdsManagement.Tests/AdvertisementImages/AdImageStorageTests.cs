@@ -1,17 +1,13 @@
 ﻿using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Domain.Models;
 using AdsManagement.Tests.FakeData;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace AdsManagement.Tests.AdvertisementImageTest
+namespace AdsManagement.Tests.AdvertisementImages
 {
     public class AdImageStorageTests
     {

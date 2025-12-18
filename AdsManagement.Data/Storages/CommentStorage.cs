@@ -1,5 +1,6 @@
 ﻿using AdsManagement.App.Common;
 using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.App.Interfaces;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace AdsManagement.Data.Storages
         public async Task<Guid> AddAsync(Comment comment, CancellationToken token = default)
         {
             if (comment == null)
-                throw new ArgumentNullException("The comment may not be null", nameof(comment));
+                throw new ArgumentNullException(nameof(comment), "The comment may not be null");
 
             if (!await UserExists(comment.UserId, token))
                 throw new UserNotFoundException(comment.UserId);
@@ -36,7 +37,7 @@ namespace AdsManagement.Data.Storages
         public async Task DeleteAsync(Guid commentId, CancellationToken token = default)
         {
             if (commentId == Guid.Empty)
-                throw new ArgumentException("The comment ID cannot be empty", nameof(commentId));
+                throw new ArgumentException(nameof(commentId), "The comment ID cannot be empty");
 
             var dbComment = await _context.Comments.FindAsync(commentId, token) ?? throw new CommentNotFoundException(commentId);
 
@@ -46,7 +47,7 @@ namespace AdsManagement.Data.Storages
         public async Task UpdateAsync(Comment comment, CancellationToken token = default)
         {
             if (comment == null)
-                throw new ArgumentNullException("The comment may not be null", nameof(comment));
+                throw new ArgumentNullException(nameof(comment), "The comment may not be null");
 
             var dbComment = await _context.Comments.FindAsync(comment.Id, token) ?? throw new CommentNotFoundException(comment.Id);
 
@@ -54,10 +55,10 @@ namespace AdsManagement.Data.Storages
             await _context.SaveChangesAsync(token);
         }
 
-        public async Task<PagedResult<Comment>> GetByAdvertisementAsync(Guid advertisementId, int page , int pageSize, CancellationToken token = default)
+        public async Task<PagedResult<Comment>> GetByAdvertisementAsync(Guid advertisementId, int page, int pageSize, CancellationToken token = default)
         {
             if (advertisementId == Guid.Empty)
-                throw new ArgumentException("The Advertisement ID cannot be empty", nameof(advertisementId));
+                throw new ArgumentException(nameof(advertisementId), "The Advertisement ID cannot be empty");
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
 

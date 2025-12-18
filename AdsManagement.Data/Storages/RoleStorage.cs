@@ -15,16 +15,18 @@ namespace AdsManagement.Data.Storages
         {
             _dbContext = dbContext;
         }
-        public async Task<Role?> GetAsync(Guid id, CancellationToken token = default)
+        public async Task<Role> GetAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return null;
+                throw new ArgumentException(nameof(id), "The role ID cannot be empty");
 
-            return await _dbContext.Roles
+            var dbRole = await _dbContext.Roles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == id, token);
+                .FirstOrDefaultAsync(c => c.Id == id, token) ?? throw new RoleNotFoundException(id);
+
+            return dbRole;
         }
-        public async Task<PagedResult<Role>> GetAllAsync(int page, int pageSize, CancellationToken token= default)
+        public async Task<PagedResult<Role>> GetAllAsync(int page, int pageSize, CancellationToken token = default)
         {
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
@@ -37,20 +39,20 @@ namespace AdsManagement.Data.Storages
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(token);
-                
 
-             return new PagedResult<Role>()
-             {
-                 Items = roles,
-                 TotalCount = totalCount,
-                 Page = page,
-                 PageSize = pageSize
-             };
+
+            return new PagedResult<Role>()
+            {
+                Items = roles,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
-        public async Task<bool> AddAsync(Role role, CancellationToken token = default)
+        public async Task<Guid> AddAsync(Role role, CancellationToken token = default)
         {
             if (role == null)
-                return false;
+                throw new ArgumentNullException(nameof(role), "The role cannot be null");
 
             if (await _dbContext.Roles.AnyAsync(c => c.Name == role.Name, token))
                 throw new RoleExistsException("The role already exists");
@@ -58,12 +60,12 @@ namespace AdsManagement.Data.Storages
             _dbContext.Roles.Add(role);
 
             await _dbContext.SaveChangesAsync(token);
-            return true;
+            return role.Id;
         }
-        public async Task<bool> DeleteAsync(Guid id, CancellationToken token = default)
+        public async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return false;
+                throw new ArgumentException(nameof(id), "The ID cannot be empty");
 
             var dbRole = await _dbContext.Roles.FindAsync(id, token);
 
@@ -72,13 +74,12 @@ namespace AdsManagement.Data.Storages
 
             _dbContext.Roles.Remove(dbRole);
             await _dbContext.SaveChangesAsync(token);
-            return true;
         }
 
-        public async Task<bool> UpdateAsync(Role role, CancellationToken token = default)
+        public async Task UpdateAsync(Role role, CancellationToken token = default)
         {
             if (role == null)
-                return false;
+                throw new ArgumentNullException(nameof(role), "The role cannot be null");
 
             var dbRole = await _dbContext.Roles.FindAsync(role.Id, token);
 
@@ -87,7 +88,6 @@ namespace AdsManagement.Data.Storages
 
             _dbContext.Entry(dbRole).CurrentValues.SetValues(role);
             await _dbContext.SaveChangesAsync(token);
-            return true;
         }
 
     }

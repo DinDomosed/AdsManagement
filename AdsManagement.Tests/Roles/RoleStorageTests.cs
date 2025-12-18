@@ -5,7 +5,7 @@ using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace AdsManagement.Tests.RoleTests
+namespace AdsManagement.Tests.Roles
 {
     public class RoleStorageTests
     {
@@ -74,11 +74,10 @@ namespace AdsManagement.Tests.RoleTests
             Role upRole = new Role("SuperPuper Admin", testId);
 
             //Act
-            var result = await rolesStorage.UpdateAsync(upRole);
+            await rolesStorage.UpdateAsync(upRole);
             var dbRole = await rolesStorage.GetAsync(testId);
 
             //Assert
-            Assert.True(result);
             Assert.Equal(upRole.Name, dbRole.Name);
         }
         [Fact]
@@ -105,13 +104,11 @@ namespace AdsManagement.Tests.RoleTests
                 await rolesStorage.AddAsync(role);
 
             //Act
-            var result = await rolesStorage.DeleteAsync(testId);
+            await rolesStorage.DeleteAsync(testId);
 
             //Act + Assert
             await Assert.ThrowsAsync<RoleNotFoundException>(async () => await rolesStorage.DeleteAsync(testId));
-
-            //Assert
-            Assert.True(result);
+            await Assert.ThrowsAsync<RoleNotFoundException>(async () => await rolesStorage.GetAsync(testId));
         }
     }
 }

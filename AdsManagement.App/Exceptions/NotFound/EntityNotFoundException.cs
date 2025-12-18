@@ -1,4 +1,4 @@
-﻿namespace AdsManagement.App.Exceptions
+﻿namespace AdsManagement.App.Exceptions.NotFound
 {
     public abstract class EntityNotFoundException : Exception
     {

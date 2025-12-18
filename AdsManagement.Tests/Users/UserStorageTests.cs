@@ -1,5 +1,6 @@
 ﻿using AdsManagement.App.DTOs.User;
 using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Domain.Models;
@@ -7,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 
-namespace AdsManagement.Tests.UserTests
-{ 
+namespace AdsManagement.Tests.Users
+{
     public class UserStorageTests
     {
         [Fact]
@@ -40,7 +41,7 @@ namespace AdsManagement.Tests.UserTests
             await roleStorage.AddAsync(role);
 
             //Act
-            foreach(var entity in users)
+            foreach (var entity in users)
             {
                 await userStorage.AddAsync(entity);
             }
@@ -130,12 +131,11 @@ namespace AdsManagement.Tests.UserTests
             }
 
             //Act
-            bool result = await userStorage.DeleteAsync(testId);
-            var dbUser = await userStorage.GetAsync(testId);
+            await userStorage.DeleteAsync(testId);
 
             //Assert
-            Assert.True(result);
-            Assert.Null(dbUser);
+            await Assert.ThrowsAsync<UserNotFoundException>(async () => await userStorage.GetAsync(testId));
+
         }
         [Fact]
         public async Task UpdateAsync_Test()
@@ -152,7 +152,7 @@ namespace AdsManagement.Tests.UserTests
             Role testRole = new Role("Admin");
             Role upRole = new Role("User");
             var testId = Guid.NewGuid();
-            var testId1 = Guid.NewGuid(); 
+            var testId1 = Guid.NewGuid();
 
             List<User> users = new List<User>
             {
@@ -175,8 +175,8 @@ namespace AdsManagement.Tests.UserTests
 
             //Act
 
-            var result = await userStorage.UpdateAsync(upUser3);
-            var result1 = await userStorage.UpdateAsync(upUser1);
+            await userStorage.UpdateAsync(upUser3);
+            await userStorage.UpdateAsync(upUser1);
 
             var dbUser = await userStorage.GetAsync(testId);
             var dbUser1 = await userStorage.GetAsync(testId1);
@@ -184,9 +184,6 @@ namespace AdsManagement.Tests.UserTests
             //Assert
             Assert.NotNull(dbUser.Role);
             Assert.NotNull(dbUser1.Role);
-
-            Assert.True(result);
-            Assert.True(result1);
 
             Assert.Equal("Test30", dbUser.Name);
             Assert.Equal(upRole.Name, dbUser.Role.Name);

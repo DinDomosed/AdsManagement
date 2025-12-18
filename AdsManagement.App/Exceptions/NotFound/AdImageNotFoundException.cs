@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AdsManagement.App.Exceptions
+namespace AdsManagement.App.Exceptions.NotFound
 {
     public class AdImageNotFoundException : EntityNotFoundException
     {

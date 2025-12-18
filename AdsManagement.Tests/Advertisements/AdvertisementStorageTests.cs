@@ -1,19 +1,14 @@
 ﻿using AdsManagement.App.DTOs.Advertisement;
 using AdsManagement.App.Exceptions;
-using AdsManagement.App.Interfaces;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Domain.Models;
 using AdsManagement.Tests.FakeData;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace AdsManagement.Tests.AdvertisementT
+namespace AdsManagement.Tests.Advertisements
 {
     public class AdvertisementStorageTests
     {
@@ -58,18 +53,18 @@ namespace AdsManagement.Tests.AdvertisementT
             //Act - Get
             var adDb1 = await storage.GetAsync(ad1.Id);
             var adDb3 = await storage.GetAsync(ad3.Id);
-            var adDbNull = await storage.GetAsync(Guid.Parse("7c1f8a4e-3b62-4e9d-9a2f-5c6d8e1b0a34"));
+            
+            await Assert.ThrowsAsync<AdvertisementNotFoundException>(async () =>
+            await storage.GetAsync(Guid.Parse("7c1f8a4e-3b62-4e9d-9a2f-5c6d8e1b0a34")));
 
 
             //Assert
-            Assert.True(result1);
-            Assert.True(result2);
-            Assert.True(result3);
+            Assert.NotEqual(Guid.Empty, result1);
+            Assert.NotEqual(Guid.Empty, result2);
+            Assert.NotEqual(Guid.Empty, result3);
 
             Assert.Equal("IT решения", adDb1.Title);
             Assert.Equal("DEX", adDb3.User.Name);
-            Assert.Null(adDbNull);
-
         }
         [Fact]
         public async Task DeleteAsync_Test()
@@ -95,15 +90,11 @@ namespace AdsManagement.Tests.AdvertisementT
             var resultAdd = await storage.AddAsync(ad1);
 
             //Act
-            var resultDel = await storage.DeleteAsync(ad1.Id);
+            await storage.DeleteAsync(ad1.Id);
 
             //Assert + Act
             await Assert.ThrowsAsync<AdvertisementNotFoundException>(async () => 
             await storage.DeleteAsync(Guid.Parse("e8b7a2c5-3d14-4f9e-9c6a-2b1d5e7f0a34")));
-
-            //Assert
-            Assert.True(resultAdd);
-            Assert.True(resultDel);
         }
         [Fact]
         public async Task UpdateAsync_Test()
@@ -133,12 +124,11 @@ namespace AdsManagement.Tests.AdvertisementT
             await storage.AddAsync(ad1);
 
             //Act
-            var result = await storage.UpdateAsync(ad1Up);
-            var resultFalse = await storage.UpdateAsync(null);
+            await storage.UpdateAsync(ad1Up);
 
-            //Assert
-            Assert.True(result);
-            Assert.False(resultFalse);
+            //Assert + Act
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>  await storage.UpdateAsync(null));
+            
         }
 
         [Fact]

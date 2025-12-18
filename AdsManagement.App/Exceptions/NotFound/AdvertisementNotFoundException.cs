@@ -1,6 +1,6 @@
 ﻿using AdsManagement.Domain.Models;
 
-namespace AdsManagement.App.Exceptions
+namespace AdsManagement.App.Exceptions.NotFound
 {
     public sealed class AdvertisementNotFoundException : EntityNotFoundException
     {

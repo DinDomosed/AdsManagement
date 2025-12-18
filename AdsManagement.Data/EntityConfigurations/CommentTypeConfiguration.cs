@@ -10,6 +10,10 @@ namespace AdsManagement.Data.EntityConfigurations
         {
             builder.ToTable("Comments");
 
+            builder.HasIndex(c => new { c.AdvertisementId, c.CreatedAt });
+
+            builder.HasIndex(c => c.UserId);
+
             builder.Property(c => c.Text)
                 .HasColumnName("Text")
                 .HasMaxLength(500)

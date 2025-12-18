@@ -10,6 +10,8 @@ namespace AdsManagement.Data.EntityConfigurations
         {
             builder.ToTable("Users");
 
+            builder.HasIndex(c => c.Name);
+
             builder.Property(c => c.Name)
                 .HasColumnName("Name")
                 .IsRequired()

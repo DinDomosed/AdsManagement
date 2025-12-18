@@ -43,6 +43,7 @@ namespace AdsManagement.Data.EntityConfigurations
                 .HasColumnType("timestamp")
                 .IsRequired();
 
+
             builder.HasMany(a => a.Images)
                 .WithOne(i => i.Advertisement)
                 .HasForeignKey(i => i.AdvertisementId)

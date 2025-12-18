@@ -1,10 +1,12 @@
 ﻿using AdsManagement.App.Common;
 using AdsManagement.App.DTOs.Advertisement;
 using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.App.Interfaces;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AdsManagement.Data.Storages
 {
@@ -19,22 +21,24 @@ namespace AdsManagement.Data.Storages
             _time = time;
             _limitationAds = limitationAds;
         }
-        public async Task<Advertisement?> GetAsync(Guid id, CancellationToken token = default)
+        public async Task<Advertisement> GetAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return null;
+                throw new ArgumentException(nameof(id), "The advertisement ID cannot be empty");
 
-            return await _context.Advertisements
+            var dbAdv = await _context.Advertisements
                 .AsNoTracking()
                 .Include(c => c.Images)
                 .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == id, token);
+                .FirstOrDefaultAsync(c => c.Id == id, token) ?? throw new AdvertisementNotFoundException(id);
+
+            return dbAdv;
         }
 
-        public async Task<bool> AddAsync(Advertisement advertisement, CancellationToken token = default)
+        public async Task<Guid> AddAsync(Advertisement advertisement, CancellationToken token = default)
         {
             if (advertisement == null)
-                return false;
+                throw new ArgumentNullException(nameof(advertisement), "The advertisement cannot be null");
 
             var dbUser = await GetUserAsync(advertisement.UserId, token);
 
@@ -43,13 +47,13 @@ namespace AdsManagement.Data.Storages
 
             _context.Advertisements.Add(advertisement);
             await _context.SaveChangesAsync(token);
-            return true;
+            return advertisement.Id;
         }
 
-        public async Task<bool> DeleteAsync(Guid id, CancellationToken token = default)
+        public async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return false;
+                throw new ArgumentException(nameof(id), "The ID cannot be empty");
 
             var dbAdv = await _context.Advertisements.FindAsync(id, token);
 
@@ -58,18 +62,16 @@ namespace AdsManagement.Data.Storages
 
             _context.Advertisements.Remove(dbAdv);
             await _context.SaveChangesAsync(token);
-            return true;
         }
-        public async Task<bool> UpdateAsync(Advertisement adv, CancellationToken token = default)
+        public async Task UpdateAsync(Advertisement adv, CancellationToken token = default)
         {
             if (adv == null)
-                return false;
+                throw new ArgumentNullException(nameof(adv), "The advertisement cannot be null");
 
             var dbAdv = await _context.Advertisements.FindAsync(adv.Id, token) ?? throw new AdvertisementNotFoundException(adv.Id);
 
             _context.Entry(dbAdv).CurrentValues.SetValues(adv);
             await _context.SaveChangesAsync(token);
-            return true;
         }
 
         public async Task<PagedResult<Advertisement>> GetFilterAdsAsync(AdFilterDto filter, CancellationToken token = default)
@@ -99,10 +101,10 @@ namespace AdsManagement.Data.Storages
                 PageSize = filter.PageSize
             };
         }
-        public async Task<int?> GetUserAdsCountAll(Guid userId, CancellationToken token = default)
+        public async Task<int> GetUserAdsCountAll(Guid userId, CancellationToken token = default)
         {
             if (userId == Guid.Empty)
-                return null;
+                throw new ArgumentException(nameof(userId), "The ID cannot be empty");
 
             var query = _context.Advertisements.AsNoTracking().AsQueryable();
 
@@ -110,10 +112,10 @@ namespace AdsManagement.Data.Storages
             return await query.CountAsync(token);
         }
 
-        public async Task<int?> GetUserAdsCountActive(Guid userId, CancellationToken token = default)
+        public async Task<int> GetUserAdsCountActive(Guid userId, CancellationToken token = default)
         {
             if (userId == Guid.Empty)
-                return null;
+                throw new ArgumentException(nameof(userId), "The ID cannot be empty");
 
             var query = _context.Advertisements.AsNoTracking().AsQueryable();
 
@@ -125,7 +127,7 @@ namespace AdsManagement.Data.Storages
             CancellationToken token = default)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentNullException("The user ID cannot be empty", nameof(userId));
+                throw new ArgumentNullException(nameof(userId), "The user ID cannot be empty");
 
             if (!await _context.Users.AnyAsync(c => c.Id == userId, token))
                 throw new UserNotFoundException(userId);
@@ -153,7 +155,6 @@ namespace AdsManagement.Data.Storages
             int totalCount = await query.CountAsync(token);
 
             var items = await query
-                .AsNoTracking()
                 .OrderByDescending(c => c.Number)
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Take(filter.PageSize)
@@ -184,7 +185,7 @@ namespace AdsManagement.Data.Storages
                 if (_context.Database.ProviderName?.Contains("InMemory") == true) //for tests
                     query = query.Where(c => c.Title.StartsWith(title, StringComparison.OrdinalIgnoreCase));
 
-                else 
+                else
                     query = query.Where(c => EF.Functions.ILike(c.Title, $"{title}%"));
             }
 

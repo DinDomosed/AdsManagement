@@ -2,9 +2,11 @@
 using AdsManagement.App.DTOs.Advertisement;
 using AdsManagement.App.DTOs.User;
 using AdsManagement.App.Exceptions;
+using AdsManagement.App.Exceptions.NotFound;
 using AdsManagement.App.Interfaces;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace AdsManagement.Data.Storages
 {
@@ -16,19 +18,22 @@ namespace AdsManagement.Data.Storages
         {
             _dbContext = dbContext;
         }
-        public async Task<User?> GetAsync(Guid id, CancellationToken token = default)
+        public async Task<User> GetAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return null;
-            return await _dbContext.Users.AsNoTracking()
+                throw new ArgumentException(nameof(id), "The user ID cannot be empty");
+
+            var dbUser = await _dbContext.Users.AsNoTracking()
                 .Include(c => c.Role)
-                .FirstOrDefaultAsync(c => c.Id == id, token);
+                .FirstOrDefaultAsync(c => c.Id == id, token) ?? throw new UserNotFoundException(id);
+
+            return dbUser;
         }
 
-        public async Task<bool> AddAsync(User user, CancellationToken token = default)
+        public async Task<Guid> AddAsync(User user, CancellationToken token = default)
         {
             if (user == null)
-                return false;
+                throw new ArgumentNullException(nameof(user), "The user cannot be null");
 
             var dbRole = await GetAndAttachRoleAsync(user.RoleId, token);
 
@@ -36,13 +41,12 @@ namespace AdsManagement.Data.Storages
 
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(token);
-
-            return true;
+            return user.Id;
         }
-        public async Task<bool> DeleteAsync(Guid id, CancellationToken token = default)
+        public async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return false;
+                throw new ArgumentException(nameof(id), "The ID cannot be empty");
 
             var dbUser = await _dbContext.Users.FindAsync(id, token);
 
@@ -51,13 +55,11 @@ namespace AdsManagement.Data.Storages
 
             _dbContext.Users.Remove(dbUser);
             await _dbContext.SaveChangesAsync(token);
-
-            return true;
         }
-        public async Task<bool> UpdateAsync(User user, CancellationToken token = default)
+        public async Task UpdateAsync(User user, CancellationToken token = default)
         {
             if (user == null)
-                return false;
+                throw new ArgumentNullException(nameof(user), "The user cannot be null");
 
             var dbUser = await _dbContext.Users.FirstOrDefaultAsync(c => c.Id == user.Id);
 
@@ -73,8 +75,6 @@ namespace AdsManagement.Data.Storages
 
             _dbContext.Entry(dbUser).CurrentValues.SetValues(user);
             await _dbContext.SaveChangesAsync(token);
-
-            return true;
         }
 
         public async Task<PagedResult<User>> GetFilterUserAsync(UserFilterDto filterDto, CancellationToken token = default)
@@ -91,7 +91,7 @@ namespace AdsManagement.Data.Storages
             {
                 var name = filterDto.Name.Trim();
                 if (_dbContext.Database.ProviderName?.Contains("InMemory") == true)
-                        query = query.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(c => c.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase));
                 else
                     query = query.Where(c => EF.Functions.Like(c.Name, $"{name}%"));
             }
@@ -106,7 +106,6 @@ namespace AdsManagement.Data.Storages
             List<User> items = await query
                 .Skip((filterDto.Page - 1) * filterDto.PageSize)
                 .Take(filterDto.PageSize)
-                .AsNoTracking()
                 .ToListAsync(token);
 
             return new PagedResult<User>()

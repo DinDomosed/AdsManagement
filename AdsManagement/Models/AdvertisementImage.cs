@@ -7,8 +7,9 @@
         public string OriginalImagePath { get; private set; }
         public string SmallImagePath { get; private set; }
 
-        public AdvertisementImage(string originalPath, string smallPath, Guid? id = null) : base(id)
+        public AdvertisementImage(Guid advertisementId, string originalPath, string smallPath, Guid? id = null) : base(id)
         {
+            AdvertisementId = advertisementId;
             OriginalImagePath = originalPath;
             SmallImagePath = smallPath;
         }

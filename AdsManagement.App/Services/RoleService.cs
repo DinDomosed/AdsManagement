@@ -1,7 +1,7 @@
 ﻿using AdsManagement.App.Common;
 using AdsManagement.App.DTOs.Role;
-using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain;
 using AdsManagement.Domain.Models;
 using AutoMapper;

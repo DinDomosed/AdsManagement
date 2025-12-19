@@ -1,7 +1,7 @@
 ﻿using AdsManagement.App.DTOs.Role;
 using AdsManagement.App.Exceptions;
-using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
 using AdsManagement.Data;

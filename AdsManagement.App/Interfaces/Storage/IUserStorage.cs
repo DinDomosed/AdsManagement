@@ -2,7 +2,7 @@
 using AdsManagement.App.DTOs.User;
 using AdsManagement.Domain.Models;
 
-namespace AdsManagement.App.Interfaces
+namespace AdsManagement.App.Interfaces.Storage
 {
     public interface IUserStorage: IStorage<User>
     {

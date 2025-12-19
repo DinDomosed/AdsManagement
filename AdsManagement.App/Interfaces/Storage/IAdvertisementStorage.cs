@@ -2,7 +2,7 @@
 using AdsManagement.App.DTOs.Advertisement;
 using AdsManagement.Domain.Models;
 
-namespace AdsManagement.App.Interfaces
+namespace AdsManagement.App.Interfaces.Storage
 {
     public interface IAdvertisementStorage : IStorage<Advertisement>
     {

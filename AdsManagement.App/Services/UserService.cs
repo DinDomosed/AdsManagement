@@ -1,8 +1,8 @@
 ﻿using AdsManagement.App.Common;
 using AdsManagement.App.DTOs.User;
 using AdsManagement.App.Exceptions;
-using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain.Models;
 using AutoMapper;
 using System;

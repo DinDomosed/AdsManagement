@@ -1,7 +1,7 @@
 ﻿using AdsManagement.App.Common;
 using AdsManagement.App.Exceptions;
 using AdsManagement.App.Exceptions.NotFound;
-using AdsManagement.App.Interfaces;
+using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;

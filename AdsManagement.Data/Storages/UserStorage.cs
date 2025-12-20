@@ -66,7 +66,7 @@ namespace AdsManagement.Data.Storages
             if (dbUser == null)
                 throw new UserNotFoundException(user.Id);
 
-            if (dbUser.RoleId != user.RoleId)
+            if (dbUser.RoleId != user.RoleId && user.RoleId != Guid.Empty)
             {
                 var dbRole = await GetAndAttachRoleAsync(user.RoleId, token);
 

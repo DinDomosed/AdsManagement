@@ -15,6 +15,16 @@ namespace AdsManagement.Data.Storages
         {
             _context = context;
         }
+        public async Task<Comment> GetAsync(Guid id, CancellationToken token = default)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException(nameof(id), "The comment ID cannot be empty");
+
+            var dbComment = await _context.Comments.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id) ?? throw new CommentNotFoundException(id);
+
+            return dbComment;
+        }
         public async Task<Guid> AddAsync(Comment comment, CancellationToken token = default)
         {
             if (comment == null)
@@ -51,7 +61,9 @@ namespace AdsManagement.Data.Storages
 
             var dbComment = await _context.Comments.FindAsync(comment.Id, token) ?? throw new CommentNotFoundException(comment.Id);
 
-            _context.Entry(dbComment).CurrentValues.SetValues(comment);
+            dbComment.UpdateText(comment.Text);
+            dbComment.UpdateEstimation(comment.Estimation);
+
             await _context.SaveChangesAsync(token);
         }
 

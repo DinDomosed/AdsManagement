@@ -8,5 +8,6 @@ namespace AdsManagement.App.Interfaces.Storage
         public Task DeleteAsync(Guid id, CancellationToken token = default);
         public Task<AdvertisementImage> GetAsync(Guid id, CancellationToken token = default); 
         public Task<List<AdvertisementImage>> GetByAdIdAsync(Guid advertisementId, CancellationToken token = default);
+        public Task<bool> IsImageLimitReached(Guid adId, int limitImage, CancellationToken token = default);
     }
 }

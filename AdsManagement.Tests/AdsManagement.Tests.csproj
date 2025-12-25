@@ -18,6 +18,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AdsManagement.Data\AdsManagement.Data.csproj" />
+    <ProjectReference Include="..\AdsManagement.FileStorage\AdsManagement.FileStorage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="FakeData\TestImages\accountlogo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FakeData\TestImages\dream_machine.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FakeData\TestImages\msi_dragon.webp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

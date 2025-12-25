@@ -21,7 +21,7 @@ namespace AdsManagement.Tests.AdvertisementImages
           .Options;
 
             using var dbContext = new AdsDbContext(options);
-            var storage = new AdImageStorage(dbContext, limitImage: 2);
+            var storage = new AdImageStorage(dbContext);
 
             var image1 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original1", "file/small1");
             var image2 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original2", "file/small2");
@@ -37,7 +37,7 @@ namespace AdsManagement.Tests.AdvertisementImages
 
             //Assert + Act
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await storage.AddAsync(imageNull));
-            await Assert.ThrowsAsync<AdvertisementImageLimitExceededException>(async () => await storage.AddAsync(image3));
+           
             await Assert.ThrowsAsync<AdvertisementNotFoundException>(async () => await storage.AddAsync(imageWithAdNoExists));
 
             //Assert
@@ -53,7 +53,7 @@ namespace AdsManagement.Tests.AdvertisementImages
           .Options;
 
             using var dbContext = new AdsDbContext(options);
-            var storage = new AdImageStorage(dbContext, limitImage: 2);
+            var storage = new AdImageStorage(dbContext);
 
             var image1 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original1", "file/small1");
             var image2 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original2", "file/small2");
@@ -83,7 +83,7 @@ namespace AdsManagement.Tests.AdvertisementImages
           .Options;
 
             using var dbContext = new AdsDbContext(options);
-            var storage = new AdImageStorage(dbContext, limitImage: 2);
+            var storage = new AdImageStorage(dbContext);
 
             var image1 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original1", "file/small1");
             var image2 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original2", "file/small2");
@@ -113,7 +113,7 @@ namespace AdsManagement.Tests.AdvertisementImages
           .Options;
 
             using var dbContext = new AdsDbContext(options);
-            var storage = new AdImageStorage(dbContext, limitImage: 2);
+            var storage = new AdImageStorage(dbContext);
 
             var image1 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original1", "file/small1");
             var image2 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original2", "file/small2");

@@ -9,11 +9,9 @@ namespace AdsManagement.Data.Storages
     public class AdImageStorage : IAdImageStorage
     {
         private readonly AdsDbContext _context;
-        private readonly int _limitImage;
-        public AdImageStorage(AdsDbContext context, int limitImage)
+        public AdImageStorage(AdsDbContext context)
         {
             _context = context;
-            _limitImage = limitImage;
         }
         public async Task<Guid> AddAsync(AdvertisementImage image, CancellationToken token = default)
         {
@@ -22,9 +20,6 @@ namespace AdsManagement.Data.Storages
 
             if (!await AdExists(image.AdvertisementId, token))
                 throw new AdvertisementNotFoundException(image.AdvertisementId);
-
-            if (await IsImageLimitReached(image.AdvertisementId, token))
-                throw new AdvertisementImageLimitExceededException(image.AdvertisementId, _limitImage);
 
             _context.AdvertisementImages.Add(image);
             await _context.SaveChangesAsync(token);
@@ -74,7 +69,7 @@ namespace AdsManagement.Data.Storages
                 return false;
             return await _context.Advertisements.AnyAsync(c => c.Id == adId, token);
         }
-        private async Task<bool> IsImageLimitReached(Guid adId, CancellationToken token)
+        public async Task<bool> IsImageLimitReached(Guid adId, int limitImage, CancellationToken token = default)
         {
             if (adId == Guid.Empty)
                 throw new ArgumentException(nameof(adId), "The advertisement ID cannot be empty");
@@ -83,7 +78,7 @@ namespace AdsManagement.Data.Storages
 
             int count = await query.CountAsync(token);
 
-            if (_limitImage > count)
+            if (limitImage > count)
                 return false;
 
             return true;

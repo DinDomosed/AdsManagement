@@ -51,11 +51,12 @@ namespace AdsManagement.Tests.AdvertisementImages
             IFileStorageService fileStorageService = new FileStorageService();
 
             IAdvertisementStorage storage = new AdvertisementStorage(dbContext,
-                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow },  3);
-            IAdvertisementService adService = new AdvertisementService(storage, mapper);
+                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow });
+
+            IAccessValidationsService accessValidations = new AccessValidationsService(storage, default);
 
             IAdImageStorage imageStorage = new AdImageStorage(dbContext);
-            IAdImageService service = new AdImageService(imageStorage, option , mapper, adService, imageProcessor, fileStorageService);
+            IAdImageService service = new AdImageService(imageStorage, option, mapper, imageProcessor, fileStorageService, accessValidations);
 
             var image1 = new AdvertisementImage(Guid.Parse("e9a1d7c4-5b2f-4e8a-a6c3-0f9b2d1e7c54"), "file/original1", "file/small1");
 
@@ -100,11 +101,12 @@ namespace AdsManagement.Tests.AdvertisementImages
             IFileStorageService fileStorageService = new FileStorageService();
 
             IAdvertisementStorage storage = new AdvertisementStorage(dbContext,
-                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow }, 3);
-            IAdvertisementService adService = new AdvertisementService(storage, mapper);
+                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow });
+
+            IAccessValidationsService accessValidations = new AccessValidationsService(storage, default);
 
             IAdImageStorage imageStorage = new AdImageStorage(dbContext);
-            IAdImageService service = new AdImageService(imageStorage, option, mapper, adService, imageProcessor, fileStorageService);
+            IAdImageService service = new AdImageService(imageStorage, option, mapper, imageProcessor, fileStorageService, accessValidations);
 
             var fullPathToImage1 = Path.Combine("FakeData", "TestImages", "dream_machine.png");
             var fullPathToImage2 = Path.Combine("FakeData", "TestImages", "msi_dragon.webp");
@@ -176,11 +178,12 @@ namespace AdsManagement.Tests.AdvertisementImages
             IFileStorageService fileStorageService = new FileStorageService();
 
             IAdvertisementStorage storage = new AdvertisementStorage(dbContext,
-                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow }, 3);
-            IAdvertisementService adService = new AdvertisementService(storage, mapper);
+                new FakeDateTimeProvider() { UtcNow = DateTime.UtcNow });
+
+            IAccessValidationsService accessValidations = new AccessValidationsService(storage, default);
 
             IAdImageStorage imageStorage = new AdImageStorage(dbContext);
-            IAdImageService service = new AdImageService(imageStorage, option, mapper, adService, imageProcessor, fileStorageService);
+            IAdImageService service = new AdImageService(imageStorage, option, mapper, imageProcessor, fileStorageService, accessValidations);
 
             var fullPathToImage1 = Path.Combine("FakeData", "TestImages", "dream_machine.png");
             using FileStream fs = new FileStream(fullPathToImage1, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -194,7 +197,7 @@ namespace AdsManagement.Tests.AdvertisementImages
 
             //Act + Assert 
             await Assert.ThrowsAsync<AccessDeniedException>(async () => await service.DeleteAdImageAsync(imageId_1, Guid.Parse("9f1a4e1d-2c7a-4b8a-9d6a-1f6b8e4d2a99")));
-            
+
             //Act
 
             await service.DeleteAdImageAsync(imageId_1, Guid.Parse("9f1a4e1d-2c7a-4b8a-9d6a-1f6b8e4d2a91"));
@@ -219,7 +222,7 @@ namespace AdsManagement.Tests.AdvertisementImages
 
             var storageUser = new UserStorage(dbContext);
             var storageRole = new RoleStorage(dbContext);
-            var adStorage = new AdvertisementStorage(dbContext, date, 10);
+            var adStorage = new AdvertisementStorage(dbContext, date);
 
 
             Role role = new Role("User", Guid.NewGuid());

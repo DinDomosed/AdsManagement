@@ -145,7 +145,7 @@ namespace AdsManagement.Tests.AdvertisementImages
 
             var storageUser = new UserStorage(dbContext);
             var storageRole = new RoleStorage(dbContext);
-            var adStorage = new AdvertisementStorage(dbContext, date, 10);
+            var adStorage = new AdvertisementStorage(dbContext, date);
 
 
             Role role = new Role("User", Guid.NewGuid());

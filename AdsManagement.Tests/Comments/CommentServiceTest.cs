@@ -41,7 +41,8 @@ namespace AdsManagement.Tests.Comments
 
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
-            ICommentService service = new CommentService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
+            ICommentService service = new CommentService(storage, mapper, accessValidations);
 
             var comment1 = new CreateCommentDto()
             {
@@ -99,7 +100,8 @@ namespace AdsManagement.Tests.Comments
 
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
-            ICommentService service = new CommentService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
+            ICommentService service = new CommentService(storage, mapper, accessValidations);
 
             var comment1 = new CreateCommentDto()
             {
@@ -148,7 +150,8 @@ namespace AdsManagement.Tests.Comments
 
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
-            ICommentService service = new CommentService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
+            ICommentService service = new CommentService(storage, mapper, accessValidations);
 
             var comment1 = new CreateCommentDto()
             {
@@ -215,7 +218,7 @@ namespace AdsManagement.Tests.Comments
 
             var storageUser = new UserStorage(dbContext);
             var storageRole = new RoleStorage(dbContext);
-            var adStorage = new AdvertisementStorage(dbContext, date, 10);
+            var adStorage = new AdvertisementStorage(dbContext, date);
 
 
             Role role = new Role("User", Guid.NewGuid());

@@ -12,12 +12,14 @@ namespace AdsManagement.App.Services
     {
         public event Func<Guid, Task> CommentEstinationChanged;
         private readonly ICommentStorage _storage;
+        private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
 
-        public CommentService(ICommentStorage storage, IMapper mapper)
+        public CommentService(ICommentStorage storage, IMapper mapper, IAccessValidationsService accessValidations)
         {
             _storage = storage;
             _mapper = mapper;
+            _accessValidations = accessValidations;
         }
         public async Task<Guid> AddCommentAsync(CreateCommentDto commentDto, CancellationToken token = default)
         {
@@ -38,8 +40,7 @@ namespace AdsManagement.App.Services
 
             var dbComment = await _storage.GetAsync(id, token);
 
-            if (dbComment.UserId != requestUserId)
-                throw new AccessDeniedException(id, requestUserId);
+            await _accessValidations.EnsureCommentOwnerAsync(id, requestUserId, token);
 
             await _storage.DeleteAsync(id, token);
 
@@ -54,8 +55,7 @@ namespace AdsManagement.App.Services
 
             var dbComment = await _storage.GetAsync(commentDto.Id, token);
 
-            if (dbComment.UserId != requestUserId)
-                throw new AccessDeniedException(commentDto.Id, requestUserId);
+            await _accessValidations.EnsureCommentOwnerAsync(dbComment.Id, requestUserId, token);
 
             var comment = _mapper.Map<Comment>(commentDto);
 

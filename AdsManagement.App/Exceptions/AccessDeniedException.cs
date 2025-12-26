@@ -8,11 +8,11 @@ namespace AdsManagement.App.Exceptions
 {
     public class AccessDeniedException : Exception
     {
-        public Guid TargetUserId { get; }
+        public Guid TargetId { get; }
         public Guid RequesterUserId { get; }
         public AccessDeniedException(Guid targetUserId, Guid requesterUserId) : base($"User does not have permission to perform this action")
         {
-            TargetUserId = targetUserId;
+            TargetId = targetUserId;
             RequesterUserId = requesterUserId;
         }
     }

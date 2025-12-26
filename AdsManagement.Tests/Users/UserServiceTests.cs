@@ -43,7 +43,8 @@ namespace AdsManagement.Tests.Users
 
             using var dbContext = new AdsDbContext(options);
             IUserStorage storage = new UserStorage(dbContext);
-            IUserService service = new UserService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
+            IUserService service = new UserService(storage, mapper, accessValidations);
 
             CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
             CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = Guid.NewGuid() };
@@ -81,7 +82,8 @@ namespace AdsManagement.Tests.Users
 
             using var dbContext = new AdsDbContext(options);
             IUserStorage storage = new UserStorage(dbContext);
-            IUserService service = new UserService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
+            IUserService service = new UserService(storage, mapper, accessValidations);
 
             CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
             CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = _idRoleUser };
@@ -115,7 +117,8 @@ namespace AdsManagement.Tests.Users
 
             using var dbContext = new AdsDbContext(options);
             IUserStorage storage = new UserStorage(dbContext);
-            IUserService service = new UserService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
+            IUserService service = new UserService(storage, mapper, accessValidations);
 
             CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
             CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = _idRoleUser };
@@ -165,9 +168,11 @@ namespace AdsManagement.Tests.Users
             var mapConfig = new MapperConfiguration(configExpression, new NullLoggerFactory());
             IMapper mapper = mapConfig.CreateMapper();
 
+
             using var dbContext = new AdsDbContext(options);
             IUserStorage storage = new UserStorage(dbContext);
-            IUserService service = new UserService(storage, mapper);
+            IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
+            IUserService service = new UserService(storage, mapper, accessValidations);
 
             List<CreateUserDto> dtos = new List<CreateUserDto>()
             {

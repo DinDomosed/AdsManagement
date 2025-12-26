@@ -16,12 +16,14 @@ namespace AdsManagement.App.Services
     public class UserService : IUserService
     {
         private readonly IUserStorage _storage;
+        private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
 
-        public UserService(IUserStorage storage, IMapper mapper)
+        public UserService(IUserStorage storage, IMapper mapper, IAccessValidationsService accessValidations)
         {
             _storage = storage;
             _mapper = mapper;
+            _accessValidations = accessValidations;
         }
         public async Task<ResponseUserDto> GetUserAsync(Guid id, CancellationToken token = default)
         {
@@ -41,8 +43,7 @@ namespace AdsManagement.App.Services
             if (requestUserId == Guid.Empty)
                 throw new ArgumentException(nameof(requestUserId), "The ID of the user who sent the request cannot be empty");
 
-            if (id != requestUserId)
-                throw new AccessDeniedException(id, requestUserId);
+            await _accessValidations.EnsureUserOwnerAsync(id, requestUserId, token);
 
             await _storage.DeleteAsync(id, token);
         }
@@ -54,8 +55,7 @@ namespace AdsManagement.App.Services
             if (requestUserId == Guid.Empty)
                 throw new ArgumentException(nameof(requestUserId), "The ID of the user who sent the request cannot be empty");
 
-            if (userDto.Id != requestUserId)
-                throw new AccessDeniedException(userDto.Id, requestUserId);
+            await _accessValidations.EnsureUserOwnerAsync(userDto.Id, requestUserId, token);
 
             var user = _mapper.Map<User>(userDto);
             await _storage.UpdateAsync(user, token);

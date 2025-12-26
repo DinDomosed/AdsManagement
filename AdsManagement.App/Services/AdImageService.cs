@@ -7,6 +7,7 @@ using AdsManagement.App.Settings;
 using AdsManagement.Domain.Models;
 using AutoMapper;
 using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace AdsManagement.App.Services
 {
@@ -15,19 +16,20 @@ namespace AdsManagement.App.Services
         private readonly IAdImageStorage _storage;
         private readonly AdImageServiceSettings _imagesSettings;
         private readonly IMapper _mapper;
-        private readonly IAdvertisementService _adService;
         private readonly IImageProcessorService _imageProcessorService;
         private readonly IFileStorageService _fileStorageService;
-        public AdImageService(IAdImageStorage storage, IOptions<AdImageServiceSettings> settings, IMapper mapper, 
-            IAdvertisementService advertisementService, IImageProcessorService imageProcessorService, IFileStorageService fileStorageService)
+        private readonly IAccessValidationsService _accessValidations;
+        public AdImageService(IAdImageStorage storage, IOptions<AdImageServiceSettings> settings, IMapper mapper,
+            IImageProcessorService imageProcessorService, IFileStorageService fileStorageService,
+            IAccessValidationsService accessValidations)
         {
             _storage = storage;
             _imagesSettings = settings.Value
                 ?? throw new ArgumentNullException(nameof(settings), "The image settings cannot be null");
             _mapper = mapper;
-            _adService = advertisementService;
             _imageProcessorService = imageProcessorService;
             _fileStorageService = fileStorageService;
+            _accessValidations = accessValidations;
         }
         public async Task<List<ResponseAdImageDto>> GetByAdIdAsync(Guid advertisementId, CancellationToken token = default)
         {
@@ -41,9 +43,9 @@ namespace AdsManagement.App.Services
         }
         public async Task<Guid> AddAdImageAsync(Guid adId, IFileData file, Guid requestUserId, CancellationToken token = default)
         {
-            await CheckForOwnerAsync(adId, requestUserId, token);
+            await _accessValidations.EnsureAdOwnerAsync(adId, requestUserId, token);
 
-            if(await _storage.IsImageLimitReached(adId, _imagesSettings.LimitImage, token))
+            if (await _storage.IsImageLimitReached(adId, _imagesSettings.LimitImage, token))
                 throw new AdvertisementImageLimitExceededException(adId, _imagesSettings.LimitImage);
 
             if (file.Length > (int)_imagesSettings.MaximumSizeMb * 1024 * 1024)
@@ -52,15 +54,9 @@ namespace AdsManagement.App.Services
             if (!file.ContentType.StartsWith("image/"))
                 throw new ArgumentException(nameof(file.ContentType), "The file must be an image.");
 
+            using var stream = file.OpenReadStream();
 
-            byte[] originalBytes;
-
-            using (var stream = file.OpenReadStream())
-            using (var memorySt = new MemoryStream())
-            {
-                await stream.CopyToAsync(memorySt, token);
-                originalBytes = memorySt.ToArray();
-            }
+            stream.Position = 0;
 
             var guid = Guid.NewGuid();
 
@@ -75,9 +71,9 @@ namespace AdsManagement.App.Services
 
             try
             {
-                await _fileStorageService.SaveAsync(originalBytes, fullPathOrig, token);
-                var compressedBytes = await _imageProcessorService.СompressionImageAsync(originalBytes, token);
-                await _fileStorageService.SaveAsync(compressedBytes, fullPathSmall, token);
+                await _fileStorageService.SaveAsync(stream, fullPathOrig, token);
+                var compressedStream = await _imageProcessorService.СompressionImageAsync(stream, token);
+                await _fileStorageService.SaveAsync(compressedStream, fullPathSmall, token);
             }
             catch (Exception ex)
             {
@@ -98,7 +94,7 @@ namespace AdsManagement.App.Services
 
             var imagesDb = await _storage.GetAsync(id, token);
 
-            await CheckForOwnerAsync(imagesDb.AdvertisementId, requestUserId, token);
+            await _accessValidations.EnsureAdOwnerAsync(imagesDb.AdvertisementId, requestUserId, token);
 
             await _storage.DeleteAsync(id, token);
 
@@ -113,12 +109,6 @@ namespace AdsManagement.App.Services
                 dirInfo.Create();
 
             return Path.Combine(directory, fileName);
-        }
-        private async Task CheckForOwnerAsync(Guid adId, Guid requestUserId, CancellationToken token = default)
-        {
-            bool isOwner = await _adService.IsOwnerAsync(adId, requestUserId, token);
-            if (!isOwner)
-                throw new AccessDeniedException(adId, requestUserId);
         }
     }
 }

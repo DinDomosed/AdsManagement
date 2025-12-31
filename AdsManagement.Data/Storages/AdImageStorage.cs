@@ -57,10 +57,15 @@ namespace AdsManagement.Data.Storages
             if (!await AdExists(advertisementId, token))
                 throw new AdvertisementNotFoundException(advertisementId);
 
-            return await _context.AdvertisementImages
+            var images = await _context.AdvertisementImages
                 .AsNoTracking()
                 .Where(c => c.AdvertisementId == advertisementId)
                 .ToListAsync(token);
+
+            if (images.Count == 0)
+                throw new AdImageNotFoundException(advertisementId);
+
+            return images;
 
         }
         private async Task<bool> AdExists(Guid adId, CancellationToken token)

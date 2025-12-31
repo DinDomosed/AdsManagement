@@ -6,6 +6,7 @@ using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -13,14 +14,12 @@ namespace AdsManagement.Data.Storages
 {
     public class AdvertisementStorage : IAdvertisementStorage
     {
-        private readonly int _limitationAds;
         private readonly AdsDbContext _context;
         private readonly IDateTimeProvider _time;
-        public AdvertisementStorage(AdsDbContext context, IDateTimeProvider time, int limitationAds)
+        public AdvertisementStorage(AdsDbContext context, IDateTimeProvider time)
         {
             _context = context;
             _time = time;
-            _limitationAds = limitationAds;
         }
         public async Task<Advertisement> GetAsync(Guid id, CancellationToken token = default)
         {
@@ -40,14 +39,17 @@ namespace AdsManagement.Data.Storages
         {
             if (advertisement == null)
                 throw new ArgumentNullException(nameof(advertisement), "The advertisement cannot be null");
+            try
+            {
+                var dbUser = await GetUserAsync(advertisement.UserId, token);
 
-            var dbUser = await GetUserAsync(advertisement.UserId, token);
-
-            if (await GetUserAdsCountActive(dbUser.Id, token) >= _limitationAds)
-                throw new ExceedingTheAdLimitException("The limit of active ads has been reached");
-
-            _context.Advertisements.Add(advertisement);
-            await _context.SaveChangesAsync(token);
+                _context.Advertisements.Add(advertisement);
+                await _context.SaveChangesAsync(token);
+            }
+            catch(PostgresException ex ) when (ex.SqlState =="23505")
+            {
+                throw new DuplicateAdNumberException(advertisement.Number);
+            }
             return advertisement.Id;
         }
 
@@ -71,7 +73,10 @@ namespace AdsManagement.Data.Storages
 
             var dbAdv = await _context.Advertisements.FindAsync(adv.Id, token) ?? throw new AdvertisementNotFoundException(adv.Id);
 
-            _context.Entry(dbAdv).CurrentValues.SetValues(adv);
+            dbAdv.UpdateText(adv.Text);
+            dbAdv.UpdateTitle(adv.Title);
+
+            //_context.Entry(dbAdv).CurrentValues.SetValues(adv); 
             await _context.SaveChangesAsync(token);
         }
 
@@ -168,6 +173,34 @@ namespace AdsManagement.Data.Storages
                 PageSize = filter.PageSize,
                 TotalCount = totalCount
             };
+        }
+        public async Task UpdateRatingAsync(Guid id, CancellationToken token = default)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException(nameof(id), "The ad ID cannot be empty");
+            var rating = await _context.Comments
+                .AsNoTracking()
+                .Where(c => c.AdvertisementId == id)
+                .AverageAsync(c => (decimal?)c.Estimation, token);
+
+            rating ??= 0;
+
+            var ad = await _context.Advertisements.FindAsync(id, token);
+            ad.UpdateRating((decimal)rating);
+
+            await _context.SaveChangesAsync(token);
+        }
+        public async Task<int> GetNextAdNumberAsync(Guid userId, CancellationToken token = default)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException(nameof(userId), "The userID cannot be empty");
+
+            var number = await _context.Advertisements
+                .AsNoTracking()
+                .Where(c => c.UserId == userId)
+                .MaxAsync(c => (int?)c.Number) ?? 0;
+
+            return number + 1;
         }
 
         private async Task<User?> GetUserAsync(Guid id, CancellationToken token = default)

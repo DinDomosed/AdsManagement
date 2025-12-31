@@ -10,7 +10,7 @@ namespace AdsManagement.App.Services
 {
     public class CommentService : ICommentService
     {
-        public event Func<Guid, Task> CommentEstinationChanged;
+        public event Func<Guid, CancellationToken, Task> CommentEstinationChanged;
         private readonly ICommentStorage _storage;
         private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
@@ -62,7 +62,7 @@ namespace AdsManagement.App.Services
             await _storage.UpdateAsync(comment, token);
 
             if (dbComment.Estimation != commentDto.Estimation)
-                OnCommentEstinationChanged(dbComment.AdvertisementId);
+                OnCommentEstinationChanged(dbComment.AdvertisementId, token);
         }
         public async Task<PagedResult<ResponceCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1, int pageSize = 10,
             CancellationToken token = default)
@@ -73,9 +73,9 @@ namespace AdsManagement.App.Services
             var pages = await _storage.GetByAdvertisementAsync(advertisementId, page, pageSize, token);
             return _mapper.Map<PagedResult<ResponceCommentDto>>(pages);
         }
-        protected virtual void OnCommentEstinationChanged(Guid advertisementId)
+        protected virtual void OnCommentEstinationChanged(Guid advertisementId, CancellationToken token = default)
         {
-            CommentEstinationChanged?.Invoke(advertisementId);
+            CommentEstinationChanged?.Invoke(advertisementId, token);
         }
     }
 }

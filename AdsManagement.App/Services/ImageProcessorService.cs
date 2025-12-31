@@ -11,6 +11,8 @@ namespace AdsManagement.App.Services
         {
             if (stream.Length == 0 || stream == null)
                 throw new ArgumentNullException(nameof(stream), "Image stream data cannot be null or empty");
+
+            stream.Position = 0;
             using var image = await Image.LoadAsync(stream, token);
 
             image.Mutate(c => c.Resize(new ResizeOptions

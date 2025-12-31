@@ -12,8 +12,14 @@ namespace AdsManagement.App.Mappings
             CreateMap<Advertisement, ResponceAdvertisementDto>()
                 .ForMember(d => d.Images, opt => opt.MapFrom((src, dest, srcMember, context) =>
                 {
-                    return context.Mapper.Map<ResponseAdImageDto>(src.Images);
+                    return context.Mapper.Map<List<ResponseAdImageDto>>(src.Images);
                 }));
+
+            CreateMap<CreateAdvertisementDto, Advertisement>()
+                .ForMember(c => c.Number, opt => opt.Ignore());
+
+            CreateMap<UpdateAdvertisementDto, Advertisement>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

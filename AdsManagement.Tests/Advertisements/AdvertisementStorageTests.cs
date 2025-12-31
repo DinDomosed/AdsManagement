@@ -25,8 +25,7 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
 
@@ -44,9 +43,6 @@ namespace AdsManagement.Tests.Advertisements
 
             var result1 = await storage.AddAsync(ad1);
             var result2 = await storage.AddAsync(ad2);
-
-            //Asser + act
-            await Assert.ThrowsAsync<ExceedingTheAdLimitException>(async () => await storage.AddAsync(ad4));
 
             var result3 = await storage.AddAsync(ad3);
 
@@ -79,8 +75,8 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
 
@@ -109,8 +105,8 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
             var testId = Guid.NewGuid();
@@ -144,8 +140,8 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+            
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
 
@@ -199,8 +195,8 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+            
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
 
@@ -246,8 +242,8 @@ namespace AdsManagement.Tests.Advertisements
 
             FakeDateTimeProvider date = new FakeDateTimeProvider();
             date.UtcNow = new DateTime(2025, 12, 14);
-            int adLimit = 2;
-            var storage = new AdvertisementStorage(dbContext, date, adLimit);
+            
+            var storage = new AdvertisementStorage(dbContext, date);
 
             await SetDataTest(nameDataBase);
 

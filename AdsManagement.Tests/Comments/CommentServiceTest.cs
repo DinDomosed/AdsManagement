@@ -168,7 +168,7 @@ namespace AdsManagement.Tests.Comments
                 Text = "Класс"
             };
 
-            SetDataTest(dataBaseName);
+            await SetDataTest(dataBaseName);
 
             var result1 = await service.AddCommentAsync(comment1);
             var result2 = await service.AddCommentAsync(comment2);

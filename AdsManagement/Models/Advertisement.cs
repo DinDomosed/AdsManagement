@@ -35,6 +35,13 @@ namespace AdsManagement.Domain.Models
 
         protected Advertisement() : base() { }
 
+        public void SetNumber(int number)
+        {
+            if (number <= 0)
+                throw new ArgumentException(nameof(number));
+
+            Number = number;
+        }
         public void UpdateRating(decimal rating)
         {
             if (rating > RatingRules.Max || rating < RatingRules.Min)

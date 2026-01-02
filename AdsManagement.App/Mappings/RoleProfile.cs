@@ -17,7 +17,8 @@ namespace AdsManagement.App.Mappings
             CreateMap<CreateRoleDto, Role>()
                 .ConstructUsing(src => new Role(src.Name, null));
 
-            CreateMap<Role, ResponseRoleDto>();
+            CreateMap<Role, ResponseRoleDto>()
+                .ReverseMap();
 
             CreateMap<UpdateRoleDto, Role>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) =>

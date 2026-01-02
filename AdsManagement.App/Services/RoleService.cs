@@ -2,15 +2,8 @@
 using AdsManagement.App.DTOs.Role;
 using AdsManagement.App.Interfaces.Service;
 using AdsManagement.App.Interfaces.Storage;
-using AdsManagement.Domain;
 using AdsManagement.Domain.Models;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdsManagement.App.Services
 {
@@ -35,6 +28,11 @@ namespace AdsManagement.App.Services
         public async Task<ResponseRoleDto> GetRoleAsync(Guid id, CancellationToken token = default)
         {
             var dbRole = await _storage.GetAsync(id, token);
+            return _mapper.Map<ResponseRoleDto>(dbRole);
+        }
+        public async Task<ResponseRoleDto> GetRoleByNameAsync(string roleName, CancellationToken token = default)
+        {
+            var dbRole = await _storage.GetByNameAsync(roleName, token);
             return _mapper.Map<ResponseRoleDto>(dbRole);
         }
         public async Task<PagedResult<ResponseRoleDto>> GetAllRolesAsync(int page = 1, int pageSize = 10, CancellationToken token = default)

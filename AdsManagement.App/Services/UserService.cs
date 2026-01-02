@@ -65,6 +65,12 @@ namespace AdsManagement.App.Services
             await _accessValidations.EnsureUserOwnerAsync(userDto.Id, requestUserId, token);
 
             var user = _mapper.Map<User>(userDto);
+            if(user.RoleId == Guid.Empty)
+            {
+                var dbRole = await _roleService.GetRoleByNameAsync(_deafaultRole, token);
+                user.UpdateRole(_mapper.Map<Role>(dbRole));
+            }
+
             await _storage.UpdateAsync(user, token);
         }
 

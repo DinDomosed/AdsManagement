@@ -264,7 +264,7 @@ namespace AdsManagement.Tests.Advertisements
         public async Task GetFilterAdsAsync_Test()
         {
             //Arrange 
-            string nameDataBase = "AdServiceDeleteDb";
+            string nameDataBase = "AdServiceFilterDb";
             var options = new DbContextOptionsBuilder<AdsDbContext>()
               .UseInMemoryDatabase(nameDataBase)
               .Options;
@@ -343,7 +343,7 @@ namespace AdsManagement.Tests.Advertisements
         public async Task RecalculateRatingAsync_Test()
         {
             //Arrange 
-            string nameDataBase = "AdServiceDeleteDb";
+            string nameDataBase = "AdServiceRecalculateDb";
             var options = new DbContextOptionsBuilder<AdsDbContext>()
               .UseInMemoryDatabase(nameDataBase)
               .Options;

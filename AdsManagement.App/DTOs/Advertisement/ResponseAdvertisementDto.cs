@@ -2,7 +2,7 @@
 
 namespace AdsManagement.App.DTOs.Advertisement
 {
-    public class ResponceAdvertisementDto
+    public class ResponseAdvertisementDto
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

@@ -26,6 +26,16 @@ namespace AdsManagement.Data.Storages
 
             return dbRole;
         }
+        public async Task<Role> GetByNameAsync(string roleName, CancellationToken token = default)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+                throw new ArgumentException(nameof(roleName), "Role name cannot be empty");
+            var role = await _dbContext.Roles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name == roleName, token) ?? throw new RoleNotFoundException(Guid.Empty);
+
+            return role;
+        }
         public async Task<PagedResult<Role>> GetAllAsync(int page, int pageSize, CancellationToken token = default)
         {
             if (page <= 0) page = 1;

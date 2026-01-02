@@ -29,10 +29,10 @@ namespace AdsManagement.App.Services
             _settings = options.Value;
             _accessValidations = accessValidations;
         }
-        public async Task<ResponceAdvertisementDto> GetAdvertisementAsync(Guid id, CancellationToken token = default)
+        public async Task<ResponseAdvertisementDto> GetAdvertisementAsync(Guid id, CancellationToken token = default)
         {
             var advertisementDb = await _storage.GetAsync(id, token);
-            return _mapper.Map<ResponceAdvertisementDto>(advertisementDb);
+            return _mapper.Map<ResponseAdvertisementDto>(advertisementDb);
         }
         public async Task<Guid> AddAdvertisementAsync(CreateAdvertisementDto advertisementDto, IFileData? file = null, CancellationToken token = default)
         {
@@ -94,16 +94,16 @@ namespace AdsManagement.App.Services
 
             await _storage.UpdateAsync(ad, token);
         }
-        public async Task<PagedResult<ResponceAdvertisementDto>> GetFilterAdsAsync(AdFilterDto filter, CancellationToken token = default)
+        public async Task<PagedResult<ResponseAdvertisementDto>> GetFilterAdsAsync(AdFilterDto filter, CancellationToken token = default)
         {
             var adsDb = await _storage.GetFilterAdsAsync(filter, token);
 
-            return _mapper.Map<PagedResult<ResponceAdvertisementDto>>(adsDb);
+            return _mapper.Map<PagedResult<ResponseAdvertisementDto>>(adsDb);
         }
-        public async Task<PagedResult<ResponceAdvertisementDto>> GetByUserAdsAsync(Guid userId, UserAdvertisementFilterDto filter, CancellationToken token = default)
+        public async Task<PagedResult<ResponseAdvertisementDto>> GetByUserAdsAsync(Guid userId, UserAdvertisementFilterDto filter, CancellationToken token = default)
         {
             var adsDb = await _storage.GetUserAdsAsync(userId, filter, token);
-            return _mapper.Map<PagedResult<ResponceAdvertisementDto>>(adsDb);
+            return _mapper.Map<PagedResult<ResponseAdvertisementDto>>(adsDb);
         }
         public async Task RecalculateRatingAsync(Guid id, CancellationToken token = default)
         {

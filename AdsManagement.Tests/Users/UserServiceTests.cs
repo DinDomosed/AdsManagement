@@ -42,20 +42,21 @@ namespace AdsManagement.Tests.Users
             IMapper mapper = mapConfig.CreateMapper();
 
             using var dbContext = new AdsDbContext(options);
+            IRoleStorage roleStorage = new RoleStorage(dbContext);
+            IRoleService roleService = new RoleService(roleStorage, mapper);
+
             IUserStorage storage = new UserStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
-            IUserService service = new UserService(storage, mapper, accessValidations);
+            IUserService service = new UserService(storage, mapper, accessValidations, roleService);
 
-            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
-            CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = Guid.NewGuid() };
-
+            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1" };
+           
             await SetDataTest(dataBaseName);
             //Act
             var result1 = await service.AddUserAsync(userDto);
             var userDb = await service.GetUserAsync(result1);
 
             //Assert + Act
-            await Assert.ThrowsAsync<RoleNotFoundException>(async () => await service.AddUserAsync(userDto2));
             await Assert.ThrowsAsync<UserNotFoundException>(async () => await service.GetUserAsync(Guid.NewGuid()));
 
             //Assert
@@ -81,12 +82,15 @@ namespace AdsManagement.Tests.Users
             IMapper mapper = mapConfig.CreateMapper();
 
             using var dbContext = new AdsDbContext(options);
+            IRoleStorage roleStorage = new RoleStorage(dbContext);
+            IRoleService roleService = new RoleService(roleStorage, mapper);
+
             IUserStorage storage = new UserStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
-            IUserService service = new UserService(storage, mapper, accessValidations);
+            IUserService service = new UserService(storage, mapper, accessValidations, roleService);
 
-            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
-            CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = _idRoleUser };
+            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1"};
+            CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2"};
 
             await SetDataTest(dataBaseName);
             var id1 = await service.AddUserAsync(userDto);
@@ -116,12 +120,15 @@ namespace AdsManagement.Tests.Users
             IMapper mapper = mapConfig.CreateMapper();
 
             using var dbContext = new AdsDbContext(options);
+            IRoleStorage roleStorage = new RoleStorage(dbContext);
+            IRoleService roleService = new RoleService(roleStorage, mapper);
+
             IUserStorage storage = new UserStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
-            IUserService service = new UserService(storage, mapper, accessValidations);
+            IUserService service = new UserService(storage, mapper, accessValidations, roleService);
 
-            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser };
-            CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2", RoleId = _idRoleUser };
+            CreateUserDto userDto = new CreateUserDto() { Name = "Test 1"};
+            CreateUserDto userDto2 = new CreateUserDto() { Name = "Test 2"};
 
             await SetDataTest(dataBaseName);
             var id1 = await service.AddUserAsync(userDto);
@@ -148,8 +155,6 @@ namespace AdsManagement.Tests.Users
 
             Assert.Equal(up2.RoleId, dbUser2.Role.Id);
             Assert.Equal(up2.Name, dbUser2.Name);
-            Assert.NotEqual(userDto2.RoleId, dbUser2.Role.Id);
-
         }
         [Fact]
         public async Task GetFilterUserAsync_Test()
@@ -170,17 +175,20 @@ namespace AdsManagement.Tests.Users
 
 
             using var dbContext = new AdsDbContext(options);
+            IRoleStorage roleStorage = new RoleStorage(dbContext);
+            IRoleService roleService = new RoleService(roleStorage, mapper);
+
             IUserStorage storage = new UserStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, default);
-            IUserService service = new UserService(storage, mapper, accessValidations);
+            IUserService service = new UserService(storage, mapper, accessValidations, roleService);
 
             List<CreateUserDto> dtos = new List<CreateUserDto>()
             {
-                new CreateUserDto() { Name = "Test 1", RoleId = _idRoleUser },
-                new CreateUserDto() { Name = "Test 2", RoleId = _idRoleUser },
-                new CreateUserDto() { Name = "Test 3", RoleId = _idRoleUser },
-                new CreateUserDto() { Name = "Test 4", RoleId = _idRoleAdmin },
-                new CreateUserDto() { Name = "Test 5", RoleId = _idRoleAdmin },
+                new CreateUserDto() { Name = "Test 1"},
+                new CreateUserDto() { Name = "Test 2"},
+                new CreateUserDto() { Name = "Test 3"},
+                new CreateUserDto() { Name = "Test 4"},
+                new CreateUserDto() { Name = "Test 5"},
             };
 
             await SetDataTest(dataBaseName);
@@ -206,9 +214,8 @@ namespace AdsManagement.Tests.Users
             var result2 = await service.GetFilterUserAsync(filter1_Admin);
 
             //Assert
-            Assert.Equal(3, result1.TotalCount);
-            Assert.Equal(2, result2.TotalCount);
-            Assert.Equal(dtos.Last().Name, result2.Items.First().Name);
+            Assert.Equal(5, result1.TotalCount);
+            Assert.Equal(0, result2.TotalCount);
             Assert.Equal(dtos.First().Name, result1.Items.First().Name);
         }
         private async Task SetDataTest(string dataBaseName)

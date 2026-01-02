@@ -16,14 +16,17 @@ namespace AdsManagement.App.Services
     public class UserService : IUserService
     {
         private readonly IUserStorage _storage;
+        private readonly IRoleService _roleService;
         private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
+        private const string _deafaultRole = "User";
 
-        public UserService(IUserStorage storage, IMapper mapper, IAccessValidationsService accessValidations)
+        public UserService(IUserStorage storage, IMapper mapper, IAccessValidationsService accessValidations, IRoleService roleService)
         {
             _storage = storage;
             _mapper = mapper;
             _accessValidations = accessValidations;
+            _roleService = roleService;
         }
         public async Task<ResponseUserDto> GetUserAsync(Guid id, CancellationToken token = default)
         {
@@ -36,6 +39,10 @@ namespace AdsManagement.App.Services
                 throw new ArgumentNullException(nameof(userDto), "The user cannot be null");
 
             var user = _mapper.Map<User>(userDto);
+
+            var dbRole = await _roleService.GetRoleByNameAsync(_deafaultRole, token);
+            user.UpdateRole(_mapper.Map<Role>(dbRole));
+
             return await _storage.AddAsync(user, token);
         }
         public async Task DeleteUserAsync(Guid id, Guid requestUserId, CancellationToken token = default)

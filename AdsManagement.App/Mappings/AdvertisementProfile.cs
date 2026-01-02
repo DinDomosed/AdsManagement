@@ -9,7 +9,7 @@ namespace AdsManagement.App.Mappings
     {
         public AdvertisementProfile()
         {
-            CreateMap<Advertisement, ResponceAdvertisementDto>()
+            CreateMap<Advertisement, ResponseAdvertisementDto>()
                 .ForMember(d => d.Images, opt => opt.MapFrom((src, dest, srcMember, context) =>
                 {
                     return context.Mapper.Map<List<ResponseAdImageDto>>(src.Images);

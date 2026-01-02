@@ -64,14 +64,14 @@ namespace AdsManagement.App.Services
             if (dbComment.Estimation != commentDto.Estimation)
                 OnCommentEstinationChanged(dbComment.AdvertisementId, token);
         }
-        public async Task<PagedResult<ResponceCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1, int pageSize = 10,
+        public async Task<PagedResult<ResponseCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1, int pageSize = 10,
             CancellationToken token = default)
         {
             if (page <= 0) page = 1;
             if (pageSize <= 4) pageSize = 5;
 
             var pages = await _storage.GetByAdvertisementAsync(advertisementId, page, pageSize, token);
-            return _mapper.Map<PagedResult<ResponceCommentDto>>(pages);
+            return _mapper.Map<PagedResult<ResponseCommentDto>>(pages);
         }
         protected virtual void OnCommentEstinationChanged(Guid advertisementId, CancellationToken token = default)
         {

@@ -15,7 +15,7 @@ namespace AdsManagement.App.Mappings
         {
             CreateMap<CreateCommentDto, Comment>();
 
-            CreateMap<Comment, ResponceCommentDto>(); 
+            CreateMap<Comment, ResponseCommentDto>(); 
 
             CreateMap<UpdateCommentDto, Comment>()
                 .ForMember(dest => dest.AdvertisementId, opt => opt.Ignore())

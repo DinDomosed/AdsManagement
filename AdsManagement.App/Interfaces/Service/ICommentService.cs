@@ -14,6 +14,6 @@ namespace AdsManagement.App.Interfaces.Service
         public Task<Guid> AddCommentAsync(CreateCommentDto commentDto, CancellationToken token = default);
         public Task DeleteCommentAsync(Guid id, Guid requestUserId, CancellationToken token = default);
         public Task UpdateCommentAsync(UpdateCommentDto commentDto, Guid requestUserId, CancellationToken token = default);
-        public Task<PagedResult<ResponceCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1 , int pageSize = 10, CancellationToken token = default);
+        public Task<PagedResult<ResponseCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1 , int pageSize = 10, CancellationToken token = default);
     }
 }

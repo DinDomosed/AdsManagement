@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdsManagement.App.DTOs.Comment
+﻿namespace AdsManagement.App.DTOs.Comment
 {
-    public class ResponceCommentDto
+    public class ResponseCommentDto
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

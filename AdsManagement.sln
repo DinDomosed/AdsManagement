@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.Tests", "AdsM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.FileStorage", "AdsManagement.FileStorage\AdsManagement.FileStorage.csproj", "{F4EA03F5-75D9-4AEE-9DC7-CC7DAA97F6C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsManagement.API", "AdsManagement.API\AdsManagement.API.csproj", "{888B411F-089B-4D89-B983-5FA358375765}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{F4EA03F5-75D9-4AEE-9DC7-CC7DAA97F6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4EA03F5-75D9-4AEE-9DC7-CC7DAA97F6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4EA03F5-75D9-4AEE-9DC7-CC7DAA97F6C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{888B411F-089B-4D89-B983-5FA358375765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{888B411F-089B-4D89-B983-5FA358375765}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{888B411F-089B-4D89-B983-5FA358375765}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{888B411F-089B-4D89-B983-5FA358375765}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{179A7D17-5DC1-45C7-9465-F7F087188EF8} = {89CAD674-E78C-450C-A2DD-2C46D730B085}
 		{69E1A63F-06FF-4AAF-B24A-CDADAF687527} = {00BADBEC-7537-4C95-B29A-9D21ABF72D3E}
 		{F4EA03F5-75D9-4AEE-9DC7-CC7DAA97F6C7} = {04ACC00F-2231-4E44-B951-2ED3BF5E44A4}
+		{888B411F-089B-4D89-B983-5FA358375765} = {04ACC00F-2231-4E44-B951-2ED3BF5E44A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {612D6E50-3851-42B7-B4F3-92793949D457}

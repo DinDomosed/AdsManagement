@@ -40,7 +40,7 @@ namespace AdsManagement.API.Controllers
             return NoContent();
         }
         [HttpGet("search")]
-        public async Task<IActionResult> GetByFilter(UserFilterDto filterDto, CancellationToken token = default)
+        public async Task<IActionResult> GetByFilter([FromQuery] UserFilterDto filterDto, CancellationToken token = default)
         {
             var paged = await _service.GetFilterUserAsync(filterDto, token);
             return Ok(paged);

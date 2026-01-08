@@ -1,17 +1,19 @@
+using AdsManagement.App.Interfaces;
+using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Storage;
+using AdsManagement.App.Mappings;
+using AdsManagement.App.Services;
 using AdsManagement.App.Validators.Role;
+using AdsManagement.App.Validators.User;
 using AdsManagement.Data;
+using AdsManagement.Data.Storages;
+using AdsManagement.Data.System;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
-using AdsManagement.App.Interfaces.Storage;
-using AdsManagement.Data.Storages;
-using AdsManagement.App.Interfaces.Service;
-using AdsManagement.App.Services;
-using AutoMapper;
-using AdsManagement.App.Mappings;
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.OpenApi.Models;
 namespace AdsManagement.API
 {
     public class Program
@@ -28,13 +30,30 @@ namespace AdsManagement.API
             builder.Services.AddScoped<IRoleStorage, RoleStorage>();
             builder.Services.AddScoped<IRoleService, RoleService>();
 
+            builder.Services.AddScoped<IUserStorage, UserStorage>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddScoped<IAdvertisementStorage, AdvertisementStorage>();
+
+            builder.Services.AddScoped<ICommentStorage, CommentStorage>();
+
+            builder.Services.AddScoped<IAccessValidationsService, AccessValidationsService>();
+
             builder.Services.AddValidatorsFromAssemblyContaining<CreateRoleDtoValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<UpdateRoleDtoValidator>();
+
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UserFilterDtoValidator>();
+
             builder.Services.AddFluentValidationAutoValidation();
+
+            builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
             var configExpression = new MapperConfigurationExpression();
             configExpression.AddProfile<RoleProfile>();
             configExpression.AddProfile<PagedResultProfile>();
+            configExpression.AddProfile<UserProfile>();
             var config = new MapperConfiguration(configExpression, new NullLoggerFactory());
             IMapper mapper = config.CreateMapper();
 

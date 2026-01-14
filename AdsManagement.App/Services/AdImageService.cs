@@ -7,7 +7,6 @@ using AdsManagement.App.Settings;
 using AdsManagement.Domain.Models;
 using AutoMapper;
 using Microsoft.Extensions.Options;
-using System.IO;
 
 namespace AdsManagement.App.Services
 {
@@ -98,8 +97,8 @@ namespace AdsManagement.App.Services
 
             await _storage.DeleteAsync(id, token);
 
-            if (_fileStorageService.FileExists(imagesDb.OriginalImagePath)) _fileStorageService.DeleteAsync(imagesDb.OriginalImagePath);
-            if (_fileStorageService.FileExists(imagesDb.SmallImagePath)) _fileStorageService.DeleteAsync(imagesDb.SmallImagePath);
+            if (_fileStorageService.FileExists(imagesDb.OriginalImagePath)) await _fileStorageService.DeleteAsync(imagesDb.OriginalImagePath);
+            if (_fileStorageService.FileExists(imagesDb.SmallImagePath)) await _fileStorageService.DeleteAsync(imagesDb.SmallImagePath);
         }
         private string GetFullPath(Guid advertisementId, string fileName)
         {

@@ -35,6 +35,11 @@ namespace AdsManagement.API
 
             builder.Services.AddScoped<IAdvertisementStorage, AdvertisementStorage>();
 
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
+            builder.Services.AddScoped<IAdImageStorage, AdImageStorage>();
+            builder.Services.AddScoped<IAdImageService, AdImageService>();
+            builder.Services.AddScoped<IImageProcessorService, ImageProcessorService>();
             builder.Services.AddScoped<ICommentStorage, CommentStorage>();
 
             builder.Services.AddScoped<IAccessValidationsService, AccessValidationsService>();
@@ -54,10 +59,15 @@ namespace AdsManagement.API
             configExpression.AddProfile<RoleProfile>();
             configExpression.AddProfile<PagedResultProfile>();
             configExpression.AddProfile<UserProfile>();
+            configExpression.AddProfile<AdImageProfile>();
             var config = new MapperConfiguration(configExpression, new NullLoggerFactory());
             IMapper mapper = config.CreateMapper();
 
             builder.Services.AddSingleton(mapper);
+
+
+            builder.Services.Configure<AdImageServiceSettings>(
+                builder.Configuration.GetSection("AdImageServiceSettings"));
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(opt =>

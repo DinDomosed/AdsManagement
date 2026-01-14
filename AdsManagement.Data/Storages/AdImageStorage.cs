@@ -62,8 +62,8 @@ namespace AdsManagement.Data.Storages
                 .Where(c => c.AdvertisementId == advertisementId)
                 .ToListAsync(token);
 
-            if (images.Count == 0)
-                throw new AdImageNotFoundException(advertisementId);
+            //if (images.Count == 0)
+            //    throw new AdImageNotFoundException(advertisementId);
 
             return images;
 

@@ -1,7 +1,9 @@
 ﻿using AdsManagement.App.DTOs.Comment;
-using AdsManagement.App.Interfaces.Service;
-using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.App.Exceptions;
+using AdsManagement.App.Interfaces.Events;
+using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Service.Events;
+using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
 using AdsManagement.Data;
@@ -11,11 +13,6 @@ using AdsManagement.Tests.FakeData;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AdsManagement.Tests.Comments
@@ -42,7 +39,8 @@ namespace AdsManagement.Tests.Comments
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
-            ICommentService service = new CommentService(storage, mapper, accessValidations);
+            ICommentEventsDispatcher dispatcher = new CommentEventsDispatcher(new List<ICommentEstimationChangedHandler>());
+            ICommentService service = new CommentService(storage, mapper, accessValidations, dispatcher);
 
             var comment1 = new CreateCommentDto()
             {
@@ -101,7 +99,8 @@ namespace AdsManagement.Tests.Comments
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
-            ICommentService service = new CommentService(storage, mapper, accessValidations);
+            ICommentEventsDispatcher dispatcher = new CommentEventsDispatcher(new List<ICommentEstimationChangedHandler>());
+            ICommentService service = new CommentService(storage, mapper, accessValidations, dispatcher);
 
             var comment1 = new CreateCommentDto()
             {
@@ -151,7 +150,8 @@ namespace AdsManagement.Tests.Comments
             using var dbContext = new AdsDbContext(options);
             ICommentStorage storage = new CommentStorage(dbContext);
             IAccessValidationsService accessValidations = new AccessValidationsService(default, storage);
-            ICommentService service = new CommentService(storage, mapper, accessValidations);
+            ICommentEventsDispatcher dispatcher = new CommentEventsDispatcher(new List<ICommentEstimationChangedHandler>());
+            ICommentService service = new CommentService(storage, mapper, accessValidations, dispatcher);
 
             var comment1 = new CreateCommentDto()
             {

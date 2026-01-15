@@ -2,10 +2,13 @@
 using AdsManagement.App.DTOs.Comment;
 using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces;
+using AdsManagement.App.Interfaces.Events;
 using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Service.Events;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
 using AdsManagement.App.Settings;
+using AdsManagement.App.Handlers;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Domain.Models;
@@ -385,9 +388,13 @@ namespace AdsManagement.Tests.Advertisements
 
             var adId = await service.AddAdvertisementAsync(ad1);
 
-            var commentService = new CommentService(commentStorage, mapper, access);
+            var handlers = new List<ICommentEstimationChangedHandler>()
+            {
+                new RecalculateRatingHandler(service)
+            };
+            ICommentEventsDispatcher dispatcher = new CommentEventsDispatcher(handlers);
 
-            commentService.CommentEstinationChanged += service.RecalculateRatingAsync;
+            var commentService = new CommentService(commentStorage, mapper, access, dispatcher);
 
             var comments = new List<CreateCommentDto>
             {

@@ -25,7 +25,7 @@ namespace AdsManagement.Data.EntityConfigurations
 
             builder.Property(c => c.CreatedAt)
                 .HasColumnName("Date_of_creation")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
             builder.HasOne(c => c.Advertisement)

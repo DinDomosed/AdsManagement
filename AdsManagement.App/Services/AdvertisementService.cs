@@ -79,6 +79,7 @@ namespace AdsManagement.App.Services
 
                 await Task.WhenAll(deleteTasks);
             }
+            await _storage.DeleteAsync(id, token);
         }
         public async Task UpdateAdvertisementAsync(UpdateAdvertisementDto advertisementDto, Guid requestUserId, CancellationToken token = default)
         {
@@ -115,7 +116,7 @@ namespace AdsManagement.App.Services
                 throw new ArgumentException("The user's ID cannot be empty");
             var countAdActice = await _storage.GetUserAdsCountActive(userId, token);
 
-            if (countAdActice >= _settings.LimiteAdvertisement)
+            if (countAdActice >= _settings.LimitAdvertisement)
                 return true;
             return false;
         }
@@ -138,6 +139,5 @@ namespace AdsManagement.App.Services
             }
             throw new Exception("Unexpected error while adding advertisement");
         }
-
     }
 }

@@ -2,6 +2,6 @@
 {
     public class AdServiceSettings
     {
-        public int LimiteAdvertisement { get; set; }
+        public int LimitAdvertisement { get; set; }
     }
 }

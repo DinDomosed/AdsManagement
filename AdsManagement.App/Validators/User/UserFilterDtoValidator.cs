@@ -16,7 +16,6 @@ namespace AdsManagement.App.Validators.User
 
             RuleFor(c => c.SortBy)
                 .MaximumLength(20).WithMessage("Incorrect length.")
-                .WithMessage("Prohibited content")
                 .When(c => c.SortBy != null);
 
             RuleFor(c => c.Page)

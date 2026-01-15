@@ -42,7 +42,7 @@ namespace AdsManagement.Tests.Advertisements
 
             var adSettngs = new AdServiceSettings()
             {
-                LimiteAdvertisement = 2
+                LimitAdvertisement = 2
             };
 
             await SetDataTest(nameDataBase);
@@ -122,7 +122,7 @@ namespace AdsManagement.Tests.Advertisements
 
             var adSettngs = new AdServiceSettings()
             {
-                LimiteAdvertisement = 2
+                LimitAdvertisement = 2
             };
 
             await SetDataTest(nameDataBase);
@@ -212,7 +212,7 @@ namespace AdsManagement.Tests.Advertisements
 
             var adSettngs = new AdServiceSettings()
             {
-                LimiteAdvertisement = 2
+                LimitAdvertisement = 2
             };
 
             await SetDataTest(nameDataBase);
@@ -280,7 +280,7 @@ namespace AdsManagement.Tests.Advertisements
 
             var adSettngs = new AdServiceSettings()
             {
-                LimiteAdvertisement = 2
+                LimitAdvertisement = 2
             };
 
             await SetDataTest(nameDataBase);
@@ -359,7 +359,7 @@ namespace AdsManagement.Tests.Advertisements
 
             var adSettngs = new AdServiceSettings()
             {
-                LimiteAdvertisement = 2
+                LimitAdvertisement = 2
             };
 
             await SetDataTest(nameDataBase);

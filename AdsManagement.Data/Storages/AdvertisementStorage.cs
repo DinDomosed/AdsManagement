@@ -7,8 +7,6 @@ using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AdsManagement.Data.Storages
 {

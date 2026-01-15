@@ -1,13 +1,17 @@
+using AdsManagement.API.ApiValidators;
 using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Service;
 using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
+using AdsManagement.App.Settings;
+using AdsManagement.App.Validators.Advertisement;
 using AdsManagement.App.Validators.Role;
 using AdsManagement.App.Validators.User;
 using AdsManagement.Data;
 using AdsManagement.Data.Storages;
 using AdsManagement.Data.System;
+using AdsManagement.FileStorage;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -34,12 +38,14 @@ namespace AdsManagement.API
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IAdvertisementStorage, AdvertisementStorage>();
+            builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
             builder.Services.AddScoped<IAdImageStorage, AdImageStorage>();
             builder.Services.AddScoped<IAdImageService, AdImageService>();
             builder.Services.AddScoped<IImageProcessorService, ImageProcessorService>();
+
             builder.Services.AddScoped<ICommentStorage, CommentStorage>();
 
             builder.Services.AddScoped<IAccessValidationsService, AccessValidationsService>();
@@ -51,6 +57,12 @@ namespace AdsManagement.API
             builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserDtoValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<UserFilterDtoValidator>();
 
+            builder.Services.AddValidatorsFromAssemblyContaining<AdFilterDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateAdvertisementDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateAdvertisementDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UserAdvertisementFilterDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateAdvertisementRequestValidator>();
+
             builder.Services.AddFluentValidationAutoValidation();
 
             builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
@@ -59,12 +71,16 @@ namespace AdsManagement.API
             configExpression.AddProfile<RoleProfile>();
             configExpression.AddProfile<PagedResultProfile>();
             configExpression.AddProfile<UserProfile>();
+            configExpression.AddProfile<AdvertisementProfile>();
             configExpression.AddProfile<AdImageProfile>();
+
             var config = new MapperConfiguration(configExpression, new NullLoggerFactory());
             IMapper mapper = config.CreateMapper();
 
             builder.Services.AddSingleton(mapper);
 
+            builder.Services.Configure<AdServiceSettings>(
+                builder.Configuration.GetSection("AdServiceSettings"));
 
             builder.Services.Configure<AdImageServiceSettings>(
                 builder.Configuration.GetSection("AdImageServiceSettings"));

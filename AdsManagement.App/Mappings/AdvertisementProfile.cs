@@ -16,7 +16,12 @@ namespace AdsManagement.App.Mappings
                 }));
 
             CreateMap<CreateAdvertisementDto, Advertisement>()
-                .ForMember(c => c.Number, opt => opt.Ignore());
+                .ConstructUsing(c => new Advertisement(
+                    c.UserId,
+                    c.Title,
+                    0,
+                    c.Text,
+                    null));
 
             CreateMap<UpdateAdvertisementDto, Advertisement>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));

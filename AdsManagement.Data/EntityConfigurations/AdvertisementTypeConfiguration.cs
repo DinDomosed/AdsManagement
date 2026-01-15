@@ -35,12 +35,12 @@ namespace AdsManagement.Data.EntityConfigurations
 
             builder.Property(c => c.CreatedAt)
                 .HasColumnName("Date_of_creation")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
             builder.Property(c => c.ExpiresAt)
                 .HasColumnName("Expiration_date")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
 

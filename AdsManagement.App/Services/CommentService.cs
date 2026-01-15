@@ -2,15 +2,16 @@
 using AdsManagement.App.DTOs.Comment;
 using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces.Service;
+using AdsManagement.App.Interfaces.Events;
 using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.Domain.Models;
 using AutoMapper;
+using System.Threading.Tasks;
 
 namespace AdsManagement.App.Services
 {
     public class CommentService : ICommentService
     {
-        public event Func<Guid, CancellationToken, Task> CommentEstinationChanged;
         private readonly ICommentStorage _storage;
         private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
@@ -22,6 +23,12 @@ namespace AdsManagement.App.Services
             _mapper = mapper;
             _accessValidations = accessValidations;
             _dispatcher = dispatcher;
+        }
+        public async Task<ResponseCommentDto> GetComment(Guid id, CancellationToken token = default)
+        {
+            var comment = await _storage.GetAsync(id, token);
+            var response = _mapper.Map<ResponseCommentDto>(comment);
+            return response;
         }
         public async Task<Guid> AddCommentAsync(CreateCommentDto commentDto, CancellationToken token = default)
         {

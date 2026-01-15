@@ -11,6 +11,7 @@ namespace AdsManagement.App.Interfaces.Service
 {
     public interface ICommentService
     {
+        public Task<ResponseCommentDto> GetComment(Guid id, CancellationToken token = default);
         public Task<Guid> AddCommentAsync(CreateCommentDto commentDto, CancellationToken token = default);
         public Task DeleteCommentAsync(Guid id, Guid requestUserId, CancellationToken token = default);
         public Task UpdateCommentAsync(UpdateCommentDto commentDto, Guid requestUserId, CancellationToken token = default);

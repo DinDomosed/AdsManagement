@@ -14,12 +14,14 @@ namespace AdsManagement.App.Services
         private readonly ICommentStorage _storage;
         private readonly IAccessValidationsService _accessValidations;
         private readonly IMapper _mapper;
+        private readonly ICommentEventsDispatcher _dispatcher;
 
-        public CommentService(ICommentStorage storage, IMapper mapper, IAccessValidationsService accessValidations)
+        public CommentService(ICommentStorage storage, IMapper mapper, IAccessValidationsService accessValidations, ICommentEventsDispatcher dispatcher)
         {
             _storage = storage;
             _mapper = mapper;
             _accessValidations = accessValidations;
+            _dispatcher = dispatcher;
         }
         public async Task<Guid> AddCommentAsync(CreateCommentDto commentDto, CancellationToken token = default)
         {
@@ -29,7 +31,7 @@ namespace AdsManagement.App.Services
             var comment = _mapper.Map<Comment>(commentDto);
             var dbIDComment = await _storage.AddAsync(comment, token);
 
-            OnCommentEstinationChanged(commentDto.AdvertisementId);
+            await OnCommentEstimationChanged(commentDto.AdvertisementId);
 
             return dbIDComment;
         }
@@ -44,7 +46,7 @@ namespace AdsManagement.App.Services
 
             await _storage.DeleteAsync(id, token);
 
-            OnCommentEstinationChanged(dbComment.AdvertisementId);
+            await OnCommentEstimationChanged(dbComment.AdvertisementId);
         }
         public async Task UpdateCommentAsync(UpdateCommentDto commentDto, Guid requestUserId, CancellationToken token = default)
         {
@@ -62,7 +64,7 @@ namespace AdsManagement.App.Services
             await _storage.UpdateAsync(comment, token);
 
             if (dbComment.Estimation != commentDto.Estimation)
-                OnCommentEstinationChanged(dbComment.AdvertisementId, token);
+                await OnCommentEstimationChanged(dbComment.AdvertisementId, token);
         }
         public async Task<PagedResult<ResponseCommentDto>> GetByAdvertisementAsync(Guid advertisementId, int page = 1, int pageSize = 10,
             CancellationToken token = default)
@@ -73,9 +75,9 @@ namespace AdsManagement.App.Services
             var pages = await _storage.GetByAdvertisementAsync(advertisementId, page, pageSize, token);
             return _mapper.Map<PagedResult<ResponseCommentDto>>(pages);
         }
-        protected virtual void OnCommentEstinationChanged(Guid advertisementId, CancellationToken token = default)
+        protected virtual async Task OnCommentEstimationChanged(Guid advertisementId, CancellationToken token = default)
         {
-            CommentEstinationChanged?.Invoke(advertisementId, token);
+            await _dispatcher.CommentEstimationChangedAsync(advertisementId, token);
         }
     }
 }

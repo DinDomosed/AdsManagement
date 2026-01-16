@@ -24,7 +24,7 @@ namespace AdsManagement.App.Services
             _accessValidations = accessValidations;
             _dispatcher = dispatcher;
         }
-        public async Task<ResponseCommentDto> GetComment(Guid id, CancellationToken token = default)
+        public async Task<ResponseCommentDto> GetCommentAsync(Guid id, CancellationToken token = default)
         {
             var comment = await _storage.GetAsync(id, token);
             var response = _mapper.Map<ResponseCommentDto>(comment);

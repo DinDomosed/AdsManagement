@@ -1,4 +1,5 @@
 using AdsManagement.API.ApiValidators;
+using AdsManagement.API.Middleware;
 using AdsManagement.App.Handlers;
 using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Events;
@@ -103,6 +104,8 @@ namespace AdsManagement.API
 
 
             var app = builder.Build();
+            app.UseMiddleware<ExceptionMiddleware>();
+
             if(app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -111,7 +114,6 @@ namespace AdsManagement.API
                     opt.SwaggerEndpoint("/swagger/v1/swagger.json", "AdsManagement API V1");
                 });
             }
-
             app.UseRouting();
             app.MapControllers();
 

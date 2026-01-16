@@ -1,9 +1,12 @@
 using AdsManagement.API.ApiValidators;
+using AdsManagement.App.Handlers;
 using AdsManagement.App.Interfaces;
+using AdsManagement.App.Interfaces.Events;
 using AdsManagement.App.Interfaces.Service;
 using AdsManagement.App.Interfaces.Storage;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
+using AdsManagement.App.Services.Events;
 using AdsManagement.App.Settings;
 using AdsManagement.App.Validators.Advertisement;
 using AdsManagement.App.Validators.Role;
@@ -47,6 +50,7 @@ namespace AdsManagement.API
             builder.Services.AddScoped<IImageProcessorService, ImageProcessorService>();
 
             builder.Services.AddScoped<ICommentStorage, CommentStorage>();
+            builder.Services.AddScoped<ICommentService, CommentService>();
 
             builder.Services.AddScoped<IAccessValidationsService, AccessValidationsService>();
 
@@ -73,6 +77,7 @@ namespace AdsManagement.API
             configExpression.AddProfile<UserProfile>();
             configExpression.AddProfile<AdvertisementProfile>();
             configExpression.AddProfile<AdImageProfile>();
+            configExpression.AddProfile<CommentProfile>();
 
             var config = new MapperConfiguration(configExpression, new NullLoggerFactory());
             IMapper mapper = config.CreateMapper();
@@ -84,6 +89,9 @@ namespace AdsManagement.API
 
             builder.Services.Configure<AdImageServiceSettings>(
                 builder.Configuration.GetSection("AdImageServiceSettings"));
+
+            builder.Services.AddScoped<ICommentEstimationChangedHandler,RecalculateRatingHandler>();
+            builder.Services.AddScoped<ICommentEventsDispatcher, CommentEventsDispatcher>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(opt =>
@@ -106,6 +114,7 @@ namespace AdsManagement.API
 
             app.UseRouting();
             app.MapControllers();
+
             app.Run();
         }
     }

@@ -4,7 +4,7 @@ using AdsManagement.App.Exceptions;
 using AdsManagement.App.Interfaces;
 using AdsManagement.App.Interfaces.Events;
 using AdsManagement.App.Interfaces.Service;
-using AdsManagement.App.Interfaces.Service.Events;
+using AdsManagement.App.Services.Events;
 using AdsManagement.App.Mappings;
 using AdsManagement.App.Services;
 using AdsManagement.App.Settings;

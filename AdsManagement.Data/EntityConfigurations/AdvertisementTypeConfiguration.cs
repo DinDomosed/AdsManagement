@@ -23,10 +23,11 @@ namespace AdsManagement.Data.EntityConfigurations
 
             builder.Property(c => c.Number)
                 .HasColumnName("Number")
-                .IsRequired();
+                .IsRequired()
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("nextval('ads_number_seq')");
 
-            builder.HasIndex(c => new { c.UserId, c.Number })
-                .IsUnique();
+            builder.HasIndex(c => c.Number);
 
             builder.Property(c => c.Rating)
                 .HasColumnName("Rating")

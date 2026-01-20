@@ -11,6 +11,5 @@ namespace AdsManagement.App.Interfaces.Storage
         public Task<int> GetUserAdsCountAll(Guid userId, CancellationToken token = default);
         public Task<PagedResult<Advertisement>> GetUserAdsAsync(Guid userId, UserAdvertisementFilterDto filter, CancellationToken token = default);
         public Task UpdateRatingAsync(Guid id, CancellationToken token = default);
-        public Task<int> GetNextAdNumberAsync(Guid userId, CancellationToken token = default);
     }
 }

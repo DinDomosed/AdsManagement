@@ -44,7 +44,7 @@ namespace AdsManagement.App.Services
 
             var ad = _mapper.Map<Advertisement>(advertisementDto);
 
-            var adId = await TryAddWithNextNumberAsync(ad, token);
+            var adId = await _storage.AddAsync(ad, token);
 
             if (file is not null)
             {
@@ -119,25 +119,6 @@ namespace AdsManagement.App.Services
             if (countAdActice >= _settings.LimitAdvertisement)
                 return true;
             return false;
-        }
-        private async Task<Guid> TryAddWithNextNumberAsync(Advertisement ad, CancellationToken token = default)
-        {
-            int numberAttempts = 3;
-            for (int i = 0; i < numberAttempts; i++)
-            {
-                try
-                {
-                    ad.SetNumber(await _storage.GetNextAdNumberAsync(ad.UserId, token));
-                    return await _storage.AddAsync(ad, token);
-
-                }
-                catch (DuplicateAdNumberException ex) when (i < numberAttempts)
-                {
-                    if (i == numberAttempts - 1)
-                        throw new Exception("Cannot generate unique ad number after 3 attempts");
-                }
-            }
-            throw new Exception("Unexpected error while adding advertisement");
         }
     }
 }

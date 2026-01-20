@@ -27,7 +27,6 @@ namespace AdsManagement.Data.Storages
             var dbAdv = await _context.Advertisements
                 .AsNoTracking()
                 .Include(c => c.Images)
-                .Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == id, token) ?? throw new AdvertisementNotFoundException(id);
 
             return dbAdv;
@@ -37,17 +36,12 @@ namespace AdsManagement.Data.Storages
         {
             if (advertisement == null)
                 throw new ArgumentNullException(nameof(advertisement), "The advertisement cannot be null");
-            try
-            {
-                var dbUser = await GetUserAsync(advertisement.UserId, token);
 
-                _context.Advertisements.Add(advertisement);
-                await _context.SaveChangesAsync(token);
-            }
-            catch(PostgresException ex ) when (ex.SqlState =="23505")
-            {
-                throw new DuplicateAdNumberException(advertisement.Number);
-            }
+            await EnsureUserExists(advertisement.UserId, token);
+
+            _context.Advertisements.Add(advertisement);
+            await _context.SaveChangesAsync(token);
+
             return advertisement.Id;
         }
 
@@ -92,7 +86,6 @@ namespace AdsManagement.Data.Storages
 
             int totalCount = await query.CountAsync(token);
             var items = await query
-                .AsNoTracking()
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToListAsync(token);
@@ -188,25 +181,15 @@ namespace AdsManagement.Data.Storages
 
             await _context.SaveChangesAsync(token);
         }
-        public async Task<int> GetNextAdNumberAsync(Guid userId, CancellationToken token = default)
-        {
-            if (userId == Guid.Empty)
-                throw new ArgumentException(nameof(userId), "The userID cannot be empty");
-
-            var number = await _context.Advertisements
-                .AsNoTracking()
-                .Where(c => c.UserId == userId)
-                .MaxAsync(c => (int?)c.Number) ?? 0;
-
-            return number + 1;
-        }
-
-        private async Task<User?> GetUserAsync(Guid id, CancellationToken token = default)
+        private async Task EnsureUserExists(Guid id, CancellationToken token = default)
         {
             if (id == Guid.Empty)
-                return null;
+                throw new ArgumentNullException(nameof(id), "The user ID cannot be empty");
 
-            return await _context.Users.FindAsync(id, token) ?? throw new UserNotFoundException(id);
+            var result = await _context.Users.AnyAsync(c => c.Id == id, token);
+
+            if (result == false)
+                throw new UserNotFoundException(id);
         }
         private IQueryable<Advertisement> ApplyFilters(IQueryable<Advertisement> query, AdFilterDto filter)
         {

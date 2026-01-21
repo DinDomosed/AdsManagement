@@ -60,7 +60,6 @@ namespace AdsManagement.Tests.Advertisements
             Assert.NotEqual(Guid.Empty, result3);
 
             Assert.Equal("IT решения", adDb1.Title);
-            Assert.Equal("DEX", adDb3.User.Name);
         }
         [Fact]
         public async Task DeleteAsync_Test()

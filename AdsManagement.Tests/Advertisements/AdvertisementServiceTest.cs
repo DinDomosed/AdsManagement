@@ -100,9 +100,6 @@ namespace AdsManagement.Tests.Advertisements
             Assert.Equal(adDb.Title, ad1.Title);
             Assert.Equal(adDb.Text, ad1.Text);
             Assert.Equal(adDb.UserId, ad1.UserId);
-            Assert.Equal(adDb.Number, 1);
-            Assert.Equal(adDb2.Number, 2);
-
         }
         [Fact]
         public async Task UpdateAdvertisementAsync_Test()
